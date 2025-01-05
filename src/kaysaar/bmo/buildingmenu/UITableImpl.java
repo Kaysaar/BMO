@@ -67,7 +67,8 @@ public class UITableImpl implements CustomUIPanelPlugin {
     }
 
     public void createTable() {
-
+        panelToWorkWith = mainPanel.createCustomPanel(width,height,null);
+        tooltipOfImpl = panelToWorkWith.createUIElement(width,height,doesHaveScroller);
 
     }
 
@@ -79,8 +80,7 @@ public class UITableImpl implements CustomUIPanelPlugin {
     public void clearTable() {
         panelToWorkWith.removeComponent(tooltipOfImpl);
         mainPanel.removeComponent(panelToWorkWith);
-        panelToWorkWith = mainPanel.createCustomPanel(width,height,null);
-        tooltipOfImpl = panelToWorkWith.createUIElement(width,height,doesHaveScroller);
+
     }
 
     public void reportButtonPressed(CustomButton buttonPressed) {

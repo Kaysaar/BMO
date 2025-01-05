@@ -3,10 +3,12 @@ package kaysaar.bmo.buildingmenu;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.econ.Industry;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.impl.campaign.econ.impl.BaseIndustry;
 import com.fs.starfarer.api.impl.campaign.ids.Stats;
 import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.ui.ButtonAPI;
+import com.fs.starfarer.api.ui.CustomPanelAPI;
 import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
@@ -17,10 +19,14 @@ import java.awt.*;
 public class IndustryButton extends CustomButton {
     public IndustrySpecAPI spec = (IndustrySpecAPI) buttonData;
     public MarketAPI market;
-
-    public IndustryButton(float width, float height, Object buttonData, float indent, MarketAPI market,Color base,Color bg, Color bright) {
+    public boolean isWithArrow;
+    CustomPanelAPI panelIndicator;
+    boolean arrowPointDown = true;
+    transient SpriteAPI arrows = Global.getSettings().getSprite("ui","sortIcon");
+    public IndustryButton(float width, float height, Object buttonData, float indent, MarketAPI market,Color base,Color bg, Color bright,boolean isWithArrow) {
         super(width, height, buttonData, indent,base,bg,bright);
         this.market = market;
+        this.isWithArrow = isWithArrow;
     }
 
     @Override
@@ -76,7 +82,13 @@ public class IndustryButton extends CustomButton {
         }
         label.autoSizeToWidth(200);
         label.getPosition().inTL(90, 20 - (label.computeTextHeight(label.getText()) / 2));
+
         float heightLabel = 20 - (label.computeTextHeight(label.getText()) / 2);
+        if(isWithArrow){
+            panelIndicator = Global.getSettings().createCustom(15,15,null);
+            tooltip.addCustom(panelIndicator,0f).getPosition().inTL(90+label.computeTextWidth(label.getText())+5,13);
+
+        }
         label = tooltip.addPara(getIndustryString(industry).one, getIndustryString(industry).two, 0f);
         label.autoSizeToWidth(100);
         label.getPosition().inTL(324 - indent - (label.computeTextWidth(label.getText()) / 2), heightLabel);
@@ -128,6 +140,14 @@ public class IndustryButton extends CustomButton {
         return Misc.getDGSCredits(spec.getCost());
     }
 
+    public void setArrowPointDown(boolean arrowPointDown) {
+        this.arrowPointDown = arrowPointDown;
+    }
+
+    public boolean isArrowPointDown() {
+        return arrowPointDown;
+    }
+
     public int getAmountOfIndustriesFromMarket() {
         int am = 0;
         for (Industry industry : market.getIndustries()) {
@@ -136,5 +156,19 @@ public class IndustryButton extends CustomButton {
             }
         }
         return am;
+    }
+
+    @Override
+    public void render(float alphaMult) {
+        if(panelIndicator!=null){
+            arrows.setSize(panelIndicator.getPosition().getWidth(),panelIndicator.getPosition().getHeight());
+            if(!isArrowPointDown()){
+                arrows.setAngle(90);
+            }
+            else{
+                arrows.setAngle(0);
+            }
+            arrows.renderAtCenter(panelIndicator.getPosition().getCenterX(), panelIndicator.getPosition().getCenterY());
+        }
     }
 }

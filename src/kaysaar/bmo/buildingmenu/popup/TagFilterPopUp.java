@@ -2,11 +2,9 @@ package kaysaar.bmo.buildingmenu.popup;
 
 import ashlib.data.plugins.ui.models.PopUpUI;
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.ui.Alignment;
-import com.fs.starfarer.api.ui.ButtonAPI;
-import com.fs.starfarer.api.ui.CustomPanelAPI;
-import com.fs.starfarer.api.ui.TooltipMakerAPI;
+import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.IntervalUtil;
+import com.fs.starfarer.api.util.Misc;
 import kaysaar.bmo.buildingmenu.MarketDialog;
 import kaysaar.bmo.buildingmenu.industrytags.IndustryTagManager;
 import kaysaar.bmo.buildingmenu.industrytags.IndustryTagSpec;
@@ -70,8 +68,8 @@ public class TagFilterPopUp extends PopUpUI {
     private  void createLabel(CustomPanelAPI panelAPI, IndustryTagSpec spec, ArrayList<String> sp, TooltipMakerAPI tooltip) {
         CustomPanelAPI panelToCreate = Global.getSettings().createCustom(panelAPI.getPosition().getWidth(), 20, null);
         TooltipMakerAPI tooltipButton = panelToCreate.createUIElement(panelAPI.getPosition().getWidth(), 20, false);
-        ButtonAPI button  = tooltipButton.addCheckbox(20, 20, spec.tagName+" ("+ sp.size()+")", spec, ButtonAPI.UICheckboxSize.SMALL, 0f);
-        if(tagFilterLinkedHashMap.containsKey(spec.tag)){
+        ButtonAPI button  = tooltipButton.addCheckbox(20, 20, spec.tagName+" ("+ sp.size()+")", spec, Fonts.DEFAULT_SMALL, Misc.getButtonTextColor(), ButtonAPI.UICheckboxSize.SMALL, 0f);
+        if(tagFilterLinkedHashMap.get(spec.tag)!=null){
             button.setChecked(true);
         }
         buttons.add(button);
@@ -79,36 +77,29 @@ public class TagFilterPopUp extends PopUpUI {
         panelToCreate.addUIElement(tooltipButton).inTL(0, 0);
         tooltip.addCustom(panelToCreate, 5f);
     }
-    private  void createLabel(CustomPanelAPI panelAPI,String title, TooltipMakerAPI tooltip) {
-        CustomPanelAPI panelToCreate = Global.getSettings().createCustom(panelAPI.getPosition().getWidth(), 20, null);
-        TooltipMakerAPI tooltipButton = panelToCreate.createUIElement(panelAPI.getPosition().getWidth(), 20, false);
-        ButtonAPI button = tooltipButton.addCheckbox(20, 20, title, null, ButtonAPI.UICheckboxSize.SMALL, 0f);
-        panelToCreate.addUIElement(tooltipButton).inTL(0, 0);
-        tooltip.addCustom(panelToCreate, 5f);
-    }
 
     @Override
     public void onExit() {
-        tagFilterLinkedHashMap.clear();
-        for (ButtonAPI button : buttons) {
-            if(button.isChecked()){
-                button.setChecked(false);
-                IndustryTagSpec tagSpec = (IndustryTagSpec) button.getCustomData();
-                tagFilterLinkedHashMap.put(tagSpec.tag,tagSpec);
-            }
-        }
         buttons.clear();
         marketDialog.table.activeTags.clear();
         marketDialog.table.activeTags.putAll(tagFilterLinkedHashMap);
         tagFilterLinkedHashMap.clear();
-
         marketDialog.util = new IntervalUtil(0.2f, 0.2f);
-
+        marketDialog.table.recreateOldListBasedOnPrevSort();
         marketDialog.table.recreateTable();
     }
 
     @Override
     public void advance(float amount) {
         super.advance(amount);
+        for (ButtonAPI button : buttons) {
+            IndustryTagSpec spec = (IndustryTagSpec) button.getCustomData();
+            if(button.isChecked()&&!tagFilterLinkedHashMap.containsKey(spec.tag)){
+                tagFilterLinkedHashMap.put(spec.tag,spec);
+            }
+            else if (!button.isChecked()){
+                tagFilterLinkedHashMap.remove(spec.tag);
+            }
+        }
     }
 }

@@ -32,8 +32,8 @@ public class IndustryShowcaseUI implements CustomUIPanelPlugin {
         mainPanel = Global.getSettings().createCustom(width,height,this);
 
         holderPanel = Global.getSettings().createCustom(width,height,null);
-        mainTooltip = holderPanel.createUIElement(width,height,true);
-
+        mainTooltip = holderPanel.createUIElement(width,height-122,true);
+        subTooltip = holderPanel.createUIElement(width,122,false);
     }
 
     public void setCurrentSpec(IndustrySpecAPI currentSpec) {
@@ -41,8 +41,8 @@ public class IndustryShowcaseUI implements CustomUIPanelPlugin {
     }
 
     public void createIndustryPanel(){
-        mainTooltip.setTitleOrbitronLarge();
-        mainTooltip.addTitle(currentSpec.getName());
+        subTooltip.setTitleOrbitronLarge();
+        subTooltip.addTitle(currentSpec.getName());
         UILinesRenderer renderer = new UILinesRenderer(0f);
         ImagePanel panel = new ImagePanel();
         CustomPanelAPI panelHolder = holderPanel.createCustomPanel(mainPanel.getPosition().getWidth(),95,renderer);
@@ -50,16 +50,20 @@ public class IndustryShowcaseUI implements CustomUIPanelPlugin {
         renderer.setPanel(panelImage);
         panel.init(panelImage,Global.getSettings().getSprite(currentSpec.getImageName()));
         panelHolder.addComponent(panelImage).inTL(mainPanel.getPosition().getWidth()/2-95,0);
-        mainTooltip.addCustom(panelHolder,10f);
+        subTooltip.addCustom(panelHolder,7f);
         BuildingMenuMisc.createTooltipForIndustry((BaseIndustry) currentSpec.getNewPluginInstance(market), Industry.IndustryTooltipMode.ADD_INDUSTRY,mainTooltip,true,false,mainPanel.getPosition().getWidth(),true);
-        holderPanel.addUIElement(mainTooltip).inTL(0,0);
+
+        holderPanel.addUIElement(mainTooltip).inTL(0,130);
+        holderPanel.addUIElement(subTooltip).inTL(0,0);
         mainPanel.addComponent(holderPanel).inTL(0,0);
 
     }
     public void recreateIndustryPanel(){
         mainPanel.removeComponent(holderPanel);
         holderPanel = Global.getSettings().createCustom(mainPanel.getPosition().getWidth(),mainPanel.getPosition().getHeight(),null);
-        mainTooltip = holderPanel.createUIElement(mainPanel.getPosition().getWidth(),mainPanel.getPosition().getHeight(),true);
+        mainTooltip = holderPanel.createUIElement(mainPanel.getPosition().getWidth(),mainPanel.getPosition().getHeight()-130,true);
+        subTooltip = holderPanel.createUIElement(mainPanel.getPosition().getWidth(),130,false);
+
         createIndustryPanel();
     }
     @Override

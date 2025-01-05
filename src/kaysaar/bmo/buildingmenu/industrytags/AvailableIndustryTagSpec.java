@@ -4,6 +4,8 @@ import com.fs.starfarer.api.campaign.econ.Industry;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import kaysaar.bmo.buildingmenu.IndustryDropDownButton;
+import kaysaar.bmo.buildingmenu.IndustryTable;
+import kaysaar.bmo.buildingmenu.MarketDialog;
 
 import java.util.ArrayList;
 
@@ -19,7 +21,7 @@ public class AvailableIndustryTagSpec extends IndustryTagSpec {
             for (IndustrySpecAPI o : industryDropDownButton.getSpecs()) {
                 if(specs.contains(o.getId())){
                     Industry ind = o.getNewPluginInstance(market);
-                    if(ind.isAvailableToBuild()){
+                    if(MarketDialog.isAvailableToBuild(ind,market)){
                         toReturn.add(ind.getId());
                     }
                 }

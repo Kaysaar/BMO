@@ -306,9 +306,8 @@ public class MarketDialog extends BasePopUpDialog {
         for (DropDownButton o : table.copyOfButtons) {
             o.clear();
         }
-        for (DropDownButton o : table.dropDownButtons) {
-            o.clear();
-        }
+        table.copyOfButtons.clear();
+        table.dropDownButtons.clear();
         table.clearTable();
         table.activeTags.clear();
         table.specs.clear();
@@ -329,7 +328,7 @@ public class MarketDialog extends BasePopUpDialog {
             table.advance(amount);
             if(table.specToBuilt!=null){
                 BaseIndustry ind = (BaseIndustry) table.specToBuilt.getNewPluginInstance(market);
-                if(isAvailableToBuild(ind)){
+                if(isAvailableToBuild(ind,ind.getMarket())){
                     if(!confirmButton.isEnabled()){
                         confirmButton.setEnabled(true);
                     }
@@ -349,7 +348,7 @@ public class MarketDialog extends BasePopUpDialog {
 
 
     }
-    public boolean isAvailableToBuild(Industry ind){
+    public static boolean isAvailableToBuild(Industry ind,MarketAPI market){
         boolean exceededLimit = ind.isIndustry()&& Misc.getMaxIndustries(ind.getMarket())<=Misc.getNumIndustries(market);
         return  ind.isAvailableToBuild()&&!exceededLimit&&Global.getSector().getPlayerFleet().getCargo().getCredits().get()>=ind.getBuildCost();
     }

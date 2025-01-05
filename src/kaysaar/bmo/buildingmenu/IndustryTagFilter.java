@@ -61,6 +61,7 @@ public class IndustryTagFilter implements CustomUIPanelPlugin {
             if(buttonReset.isChecked()){
                 buttonReset.setChecked(false);
                 marketDialog.table.activeTags.clear();
+                marketDialog.table.recreateOldListBasedOnPrevSort();
                 marketDialog.table.recreateTable();
             }
         }

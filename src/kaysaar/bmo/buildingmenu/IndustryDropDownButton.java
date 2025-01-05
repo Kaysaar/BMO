@@ -25,23 +25,32 @@ public class IndustryDropDownButton extends DropDownButton {
         }
         return Collections.singletonList(mainSpec);
     }
+
+    @Override
+    public void advance(float amount) {
+        super.advance(amount);
+        IndustryButton bt = (IndustryButton) mainButton;
+        bt.setArrowPointDown(isDropped);
+
+    }
+
     @Override
     public void createUIContent() {
         if (buttons == null) {
             buttons = new ArrayList<>();
             if(droppableMode){
                 for (IndustrySpecAPI subSpec : subSpecs) {
-                    IndustryButton button = new IndustryButton(width-30,height,subSpec,10f,market, Misc.getDarkPlayerColor(),Misc.getDarkPlayerColor(),Misc.getDarkPlayerColor());
+                    IndustryButton button = new IndustryButton(width-30,height,subSpec,10f,market, Misc.getDarkPlayerColor(),Misc.getDarkPlayerColor(),Misc.getDarkPlayerColor(),false);
                     button.initializeUI();
                     buttons.add(button);
                 }
             }
             if(droppableMode){
-                mainButton = new IndustryButton(width-20,height,mainSpec,0f,market,Misc.getDarkHighlightColor(),Misc.getDarkPlayerColor(),Misc.getDarkHighlightColor());
+                mainButton = new IndustryButton(width-20,height,mainSpec,0f,market,Misc.getDarkHighlightColor(),Misc.getDarkPlayerColor(),Misc.getDarkHighlightColor(),true);
 
             }
             else{
-                mainButton = new IndustryButton(width-20,height,mainSpec,0f,market, Misc.getDarkPlayerColor(),Misc.getDarkPlayerColor(),Misc.getDarkPlayerColor());
+                mainButton = new IndustryButton(width-20,height,mainSpec,0f,market, Misc.getDarkPlayerColor(),Misc.getDarkPlayerColor(),Misc.getDarkPlayerColor(),false);
 
             }
             mainButton.initializeUI();
@@ -66,4 +75,9 @@ public class IndustryDropDownButton extends DropDownButton {
 
     }
 
+    @Override
+    public void clear() {
+        super.clear();
+        subSpecs.clear();
+    }
 }
