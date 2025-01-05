@@ -12,6 +12,8 @@ import com.fs.starfarer.api.ui.CustomPanelAPI;
 import com.fs.starfarer.api.ui.UIComponentAPI;
 import com.fs.starfarer.api.ui.UIPanelAPI;
 import com.fs.starfarer.campaign.ui.marketinfo.IndustryPickerDialog;
+import kaysaar.bmo.buildingmenu.industrytags.IndustryTagManager;
+import kaysaar.bmo.buildingmenu.upgradepaths.UpgradePathManager;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -212,6 +214,9 @@ public class BuildingUITracker implements EveryFrameScript {
 
                 dialog.dismiss(1);
                 didIt = true;
+                UpgradePathManager.getInstance().rePopulate();
+                IndustryTagManager.loadDefaultTags();
+                IndustryTagManager.loadModdedTags();
                 BasePopUpDialog dialog2 = new MarketDialog(null, (MarketAPI) ReflectionUtilis.getPrivateVariable("market",ReflectionUtilis.invokeMethod("getDelegate",dialog)),ReflectionUtilis.invokeMethod("getOverview",ReflectionUtilis.invokeMethod("getDelegate",dialog)));
                 CustomPanelAPI panelAPI = Global.getSettings().createCustom(1100,700,dialog2);
                 UIPanelAPI panelAPI1  = ProductionUtil.getCoreUI();

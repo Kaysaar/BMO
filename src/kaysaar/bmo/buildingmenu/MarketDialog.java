@@ -224,7 +224,7 @@ public class MarketDialog extends BasePopUpDialog {
          table = new IndustryTable(630,height-30,panel,true,0,0,this);
          searchPanel = new IndustrySearchPanel(200,20,table);
         filter = new IndustryTagFilter(402,20,this);
-        showcaseUI = new IndustryShowcaseUI(width - 640,height,market);
+        showcaseUI = new IndustryShowcaseUI(width - 640,height,this);
         table.createSections();
         table.createTable();
         IndustryInfoBottom bottom = new IndustryInfoBottom(market,width,30);

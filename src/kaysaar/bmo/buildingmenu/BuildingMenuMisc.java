@@ -661,7 +661,15 @@ public class BuildingMenuMisc {
         }
         return specs;
     }
-
+    public static ArrayList<IndustrySpecAPI> getAllSpecsWithoutDowngradeAndItsSubItems() {
+        ArrayList<IndustrySpecAPI> specs = new ArrayList<>();
+        for (IndustrySpecAPI allIndustrySpec : Global.getSettings().getAllIndustrySpecs()) {
+            if (allIndustrySpec.getDowngrade() == null) {
+                specs.add(allIndustrySpec);
+            }
+        }
+        return specs;
+    }
     public static boolean isIndustryFromTreePresent(IndustrySpecAPI spec, MarketAPI marketToValidate) {
         if (spec.hasTag("parent_item")) {
             for (IndustrySpecAPI industrySpecAPI : getSpecsOfParent(spec.getData())) {
@@ -831,6 +839,15 @@ public class BuildingMenuMisc {
         String lowerSearchString = searchString.toLowerCase();
         String lowerTarget = target.toLowerCase();
         return AshMisc.levenshteinDistance(lowerSearchString, lowerTarget) <= threshold || lowerTarget.contains(lowerSearchString);
+    }
+    public static Set<String>getUpgradeChildren(String progenitor){
+        LinkedHashSet<String> children = new LinkedHashSet<>();
+        for (IndustrySpecAPI allIndustrySpec : Global.getSettings().getAllIndustrySpecs()) {
+            if(AshMisc.isStringValid(allIndustrySpec.getDowngrade())&&progenitor.equals(allIndustrySpec.getDowngrade())){
+                children.add(allIndustrySpec.getId());
+            }
+        }
+        return children;
     }
 
 }

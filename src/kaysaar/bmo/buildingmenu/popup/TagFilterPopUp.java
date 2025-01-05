@@ -84,7 +84,7 @@ public class TagFilterPopUp extends PopUpUI {
         marketDialog.table.activeTags.clear();
         marketDialog.table.activeTags.putAll(tagFilterLinkedHashMap);
         tagFilterLinkedHashMap.clear();
-        marketDialog.util = new IntervalUtil(0.2f, 0.2f);
+        marketDialog.util = new IntervalUtil(0.4f, 0.4f);
         marketDialog.table.recreateOldListBasedOnPrevSort();
         marketDialog.table.recreateTable();
     }
