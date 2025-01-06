@@ -54,6 +54,9 @@ public class IndustryTagManager {
     }
 
     public static void addNewTag(IndustryTagSpec tagSpec){
+        if(tagsLinked.get(tagSpec.tag)!=null){
+            tagsLinked.get(tagSpec.tag).specs.clear();
+        }
         tagsLinked.put(tagSpec.tag,tagSpec);
     }
     public static void removeTag(String tag){
@@ -116,13 +119,16 @@ public class IndustryTagManager {
     }
     public static void  loadDefaultTags(){
         IndustryTagSpec available = new AvailableIndustryTagSpec("available","Available to build",convertSpecListToIdList(),IndustryTagType.GENERIC);
-
+        IndustryTagSpec hasUpgrade = new HasUpgradeIndustryTagSpec("has_upgrade","Has upgrade",convertSpecListToIdList(),IndustryTagType.GENERIC);
+        IndustryTagSpec canUseItems = new CanInstalItemTagSpec("can_item","Can use items",convertSpecListToIdList(),IndustryTagType.GENERIC);
         IndustryTagSpec specHeavy = new IndustryTagSpec("heavyindustry","Heavy Industry",searchForTag("heavyindustry"),IndustryTagType.GENERIC);
         IndustryTagSpec specLight= new IndustryTagSpec("lightindustry","Light Industry",searchForTag("lightindustry"),IndustryTagType.GENERIC);
         IndustryTagSpec rural = new IndustryTagSpec("rural","Rural",searchForTag("rural"),IndustryTagType.GENERIC);
         IndustryTagSpec structure = new IndustryTagSpec("structure","Structure",searchForTag("structure"),IndustryTagType.GENERIC);
         IndustryTagSpec industry = new IndustryTagSpec("industry","Industry",searchForTag("industry"),IndustryTagType.GENERIC);
         addNewTag(available);
+        addNewTag(hasUpgrade);
+        addNewTag(canUseItems);
         addNewTag(industry);
         addNewTag(structure);
         addNewTag(rural);

@@ -76,7 +76,7 @@ public class BmoModPlugin extends BaseModPlugin {
             path = new CustomUpgradePath(1,2);
             map = new LinkedHashMap<>();
             map.put("waystation", new Vector2f(0,0));
-            map.put("terminus", new Vector2f(0,1));
+            map.put("logisitcbureau", new Vector2f(0,1));
             path.setIndustryCoordinates(map);
             UpgradePathManager.getInstance().addNewCustomPath(path,"waystation");
 

@@ -232,7 +232,7 @@ public class MarketDialog extends BasePopUpDialog {
         tooltip.addCustom(searchPanel.getMainPanel(),5f).getPosition().inTL(5,0);
         tooltip.addCustom(filter.getMainPanel(),5f).getPosition().inTL(210,0);
         tooltip.addCustom(showcaseUI.getMainPanel(),5f).getPosition().inTL(635,0);
-        tooltip.addCustom(bottom.getMainPanel(),5f).getPosition().inTL(5,height+30);
+        tooltip.addCustom(bottom.getMainPanel(),5f).getPosition().inTL(5,height+33);
     }
 @Override
     public ButtonAPI generateConfirmButton(TooltipMakerAPI tooltip){

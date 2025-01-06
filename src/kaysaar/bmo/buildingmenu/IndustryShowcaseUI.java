@@ -56,11 +56,11 @@ public class IndustryShowcaseUI implements CustomUIPanelPlugin {
         CustomPanelAPI panelHolder = holderPanel.createCustomPanel(mainPanel.getPosition().getWidth(),95,renderer);
         CustomPanelAPI panelImage  = panelHolder.createCustomPanel(190,95,panel);
         renderer.setPanel(panelImage);
-        panel.init(panelImage,Global.getSettings().getSprite(currentSpec.getImageName()));
+        panel.init(panelImage,Global.getSettings().getSprite(currentSpec.getNewPluginInstance(market).getCurrentImage()));
         panelHolder.addComponent(panelImage).inTL(mainPanel.getPosition().getWidth()/2-95,0);
 
         subTooltip.addCustom(panelHolder,7f);
-        BuildingMenuMisc.createTooltipForIndustry((BaseIndustry) currentSpec.getNewPluginInstance(market), Industry.IndustryTooltipMode.ADD_INDUSTRY,mainTooltip,true,false,mainPanel.getPosition().getWidth(),true);
+        BuildingMenuMisc.createTooltipForIndustry((BaseIndustry) currentSpec.getNewPluginInstance(market), Industry.IndustryTooltipMode.ADD_INDUSTRY,mainTooltip,true,false,mainPanel.getPosition().getWidth(),true,false);
         if(!BuildingMenuMisc.getIndustryTree(currentSpec.getId()).isEmpty()){
             buttonForUpgrade = buttonTooltip.addButton("Show industry upgrade path",null,mainPanel.getPosition().getWidth(),20,0f);
             buttonForUpgrade.getPosition().inTL(0,0);

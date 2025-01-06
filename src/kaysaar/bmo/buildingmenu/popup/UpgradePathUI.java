@@ -66,7 +66,7 @@ public class UpgradePathUI extends PopUpUI {
                 @Override
                 public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
                     BaseIndustry ind = (BaseIndustry) Global.getSettings().getIndustrySpec(entry.getKey()).getNewPluginInstance(marketDialog.market);
-                    BuildingMenuMisc.createTooltipForIndustry(ind, Industry.IndustryTooltipMode.ADD_INDUSTRY,tooltip,expanded,true,400,true);
+                    BuildingMenuMisc.createTooltipForIndustry(ind, Industry.IndustryTooltipMode.ADD_INDUSTRY,tooltip,expanded,true,400,true,true);
                 }
             }, TooltipMakerAPI.TooltipLocation.RIGHT,false);
             imageWithTitles.add(title);

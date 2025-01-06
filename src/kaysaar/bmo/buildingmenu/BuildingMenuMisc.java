@@ -3,10 +3,7 @@ package kaysaar.bmo.buildingmenu;
 import ashlib.data.plugins.misc.AshMisc;
 import ashlib.data.plugins.reflection.ReflectionBetterUtilis;
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.CampaignUIAPI;
-import com.fs.starfarer.api.campaign.CoreUIAPI;
-import com.fs.starfarer.api.campaign.FactionAPI;
-import com.fs.starfarer.api.campaign.InteractionDialogAPI;
+import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.CommodityOnMarketAPI;
 import com.fs.starfarer.api.campaign.econ.Industry;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
@@ -14,13 +11,16 @@ import com.fs.starfarer.api.campaign.econ.MutableCommodityQuantity;
 import com.fs.starfarer.api.campaign.listeners.ListenerUtil;
 import com.fs.starfarer.api.combat.MutableStat;
 import com.fs.starfarer.api.impl.campaign.econ.impl.BaseIndustry;
+import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo;
 import com.fs.starfarer.api.impl.campaign.ids.Industries;
+import com.fs.starfarer.api.impl.campaign.ids.Items;
 import com.fs.starfarer.api.impl.campaign.ids.Strings;
 import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.Pair;
 import kaysaar.bmo.buildingmenu.industrytags.IndustryTagManager;
+import kaysaar.bmo.buildingmenu.upgradepaths.IndustryItemsPanel;
 
 import java.awt.*;
 import java.lang.invoke.MethodHandle;
@@ -341,7 +341,7 @@ public class BuildingMenuMisc {
         return specs;
     }
     public static void createTooltipForIndustry(
-            BaseIndustry baseIndustry, Industry.IndustryTooltipMode mode, TooltipMakerAPI tooltip, boolean expanded,boolean hasTitle,float width,boolean showMods) {
+            BaseIndustry baseIndustry, Industry.IndustryTooltipMode mode, TooltipMakerAPI tooltip, boolean expanded,boolean hasTitle,float width,boolean showMods,boolean isHover) {
         float pad = 3f;
         float opad = 10f;
         FactionAPI faction = baseIndustry.getMarket().getFaction();
@@ -638,8 +638,21 @@ public class BuildingMenuMisc {
                 ListenerUtil.addToIndustryTooltip(baseIndustry, mode, tooltip, width, expanded);
             }
             tooltip.addPara("*Shown production and demand values are already adjusted based on current market size and local conditions.", gray, opad);
+            if(!getItemsForIndustry(baseIndustry.getSpec().getId(),isHover).isEmpty()&&mode == Industry.IndustryTooltipMode.ADD_INDUSTRY){
+                tooltip.addSectionHeading("Installable Items", color, dark, Alignment.MID, opad);
+                if(!isHover){
+                    tooltip.addPara("These items can be installed either in this industry, or in one of it's upgraded versions, as long as all requirements are met.",gray,opad);
+
+                }
+                else{
+                    tooltip.addPara("These items can be installed in this industry, as long as all requirements are met.",gray,opad);
+
+                }
+                tooltip.addCustom(new IndustryItemsPanel(width,baseIndustry,isHover).getMainPanel(),5f);
+            }
 
         }
+
         if (needToAddIndustry) {
             baseIndustry.unapply();
             baseIndustry.getMarket().getIndustries().remove(baseIndustry);
@@ -849,5 +862,33 @@ public class BuildingMenuMisc {
         }
         return children;
     }
+    public static Set<String>getItemsForIndustry(String industry,boolean ignoreUpgrades){
+        Set<String>items = new LinkedHashSet<>();
+        Set<IndustrySpecAPI> industries = getIndustryTree(industry);
 
+        for (SpecialItemSpecAPI spec : Global.getSettings().getAllSpecialItemSpecs()) {
+            if(spec.hasTag("mission_item")||ItemEffectsRepo.ITEM_EFFECTS.get(spec.getId())==null)continue;
+            if(spec.getParams()!=null){
+                for (String loadEntry : AshMisc.loadEntries(spec.getParams(),",")) {
+
+                    if(loadEntry.trim().equals(industry)){
+                        items.add(spec.getId());
+                    }
+                    if(!ignoreUpgrades){
+                        for (IndustrySpecAPI s : industries) {
+                            if(loadEntry.trim().equals(s.getId())){
+                                items.add(spec.getId());
+                                break;
+                            }
+                        }
+                    }
+
+                }
+
+
+            }
+
+        }
+        return items;
+    }
 }
