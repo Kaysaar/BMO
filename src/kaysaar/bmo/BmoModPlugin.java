@@ -4,6 +4,7 @@ import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import kaysaar.bmo.buildingmenu.BuildingUITracker;
 import kaysaar.bmo.buildingmenu.industrytags.IndustryTagManager;
+import kaysaar.bmo.buildingmenu.tooltipinjector.ModIndustryTooltipInjector;
 import kaysaar.bmo.buildingmenu.upgradepaths.CustomUpgradePath;
 import kaysaar.bmo.buildingmenu.upgradepaths.UpgradePathManager;
 import org.lwjgl.util.vector.Vector2f;
@@ -25,6 +26,7 @@ public class BmoModPlugin extends BaseModPlugin {
     @Override
     public void onGameLoad(boolean newGame) {
         Global.getSector().addTransientScript(new BuildingUITracker());
+        Global.getSector().getListenerManager().addListener(new ModIndustryTooltipInjector(),true);
         //Note : Should be done from AoTD side, but i dont wanna make sudden update
         if(Global.getSettings().getModManager().isModEnabled("aotd_vok")){
             CustomUpgradePath path = new CustomUpgradePath(3,3);
