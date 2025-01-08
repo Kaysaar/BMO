@@ -23,7 +23,9 @@ public class IndustryDropDownButton extends DropDownButton {
         if(droppableMode){
             return subSpecs;
         }
-        return Collections.singletonList(mainSpec);
+        ArrayList<IndustrySpecAPI>sp = new ArrayList<>();
+        sp.add(mainSpec);
+        return sp;
     }
 
     @Override

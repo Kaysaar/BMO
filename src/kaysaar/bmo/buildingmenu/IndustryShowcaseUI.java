@@ -14,9 +14,11 @@ import com.fs.starfarer.api.ui.ButtonAPI;
 import com.fs.starfarer.api.ui.CustomPanelAPI;
 import com.fs.starfarer.api.ui.PositionAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
+import com.fs.starfarer.api.util.IntervalUtil;
 import kaysaar.bmo.buildingmenu.upgradepaths.CustomUpgradePath;
 import kaysaar.bmo.buildingmenu.upgradepaths.UpgradePathManager;
 import kaysaar.bmo.buildingmenu.popup.UpgradePathUI;
+import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 
@@ -32,6 +34,8 @@ public class IndustryShowcaseUI implements CustomUIPanelPlugin {
     IndustrySpecAPI currentSpec;
     MarketAPI market;
     MarketDialog dialog;
+    IntervalUtil util = null;
+    boolean expanded = false;
     public CustomPanelAPI getMainPanel() {
         return mainPanel;
     }
@@ -60,7 +64,7 @@ public class IndustryShowcaseUI implements CustomUIPanelPlugin {
         panelHolder.addComponent(panelImage).inTL(mainPanel.getPosition().getWidth()/2-95,0);
 
         subTooltip.addCustom(panelHolder,7f);
-        BuildingMenuMisc.createTooltipForIndustry((BaseIndustry) currentSpec.getNewPluginInstance(market), Industry.IndustryTooltipMode.ADD_INDUSTRY,mainTooltip,true,false,mainPanel.getPosition().getWidth(),true,false);
+        BuildingMenuMisc.createTooltipForIndustry((BaseIndustry) currentSpec.getNewPluginInstance(market), Industry.IndustryTooltipMode.ADD_INDUSTRY,mainTooltip,expanded,false,mainPanel.getPosition().getWidth(),true,false);
         if(!BuildingMenuMisc.getIndustryTree(currentSpec.getId()).isEmpty()){
             buttonForUpgrade = buttonTooltip.addButton("Show industry upgrade path",null,mainPanel.getPosition().getWidth(),20,0f);
             buttonForUpgrade.getPosition().inTL(0,0);
@@ -97,6 +101,12 @@ public class IndustryShowcaseUI implements CustomUIPanelPlugin {
 
     @Override
     public void advance(float amount) {
+        if(util!=null){
+            util.advance(amount);
+            if(util.intervalElapsed()){
+                util = null;
+            }
+        }
         if(buttonForUpgrade!=null&&buttonForUpgrade.isChecked()){
             buttonForUpgrade.setChecked(false);
 //            CustomUpgradePath path = new CustomUpgradePath(3,3);
@@ -122,7 +132,18 @@ public class IndustryShowcaseUI implements CustomUIPanelPlugin {
 
     @Override
     public void processInput(List<InputEventAPI> events) {
+        for (InputEventAPI event : events) {
+            if(event.isConsumed())continue;
+            if(event.getEventValue()== Keyboard.KEY_F1&&util==null){
+                event.consume();
+                if(currentSpec!=null){
+                    util = new IntervalUtil(0.2f,0.2f);
+                    expanded = !expanded;
+                    recreateIndustryPanel();
+                }
 
+            }
+        }
     }
 
     @Override

@@ -66,7 +66,27 @@ public class IndustryTagFilter implements CustomUIPanelPlugin {
             }
         }
     }
+    public static void placePopUpUI(PopUpUI ui, ButtonAPI button, float initWidth, float initHeight) {
+        float width1 = initWidth;
+        float height1 = initHeight;
+        CustomPanelAPI panelAPI = Global.getSettings().createCustom(width1, height1, ui);
+        float x = button.getPosition().getX() + button.getPosition().getWidth();
+        float y = button.getPosition().getY() + button.getPosition().getHeight();
+        if (x + width1 >= Global.getSettings().getScreenWidth()) {
+            float diff = x + width1 - Global.getSettings().getScreenWidth();
+            x = x - diff - 5.0F;
+        }
 
+        if (y - height1 <= 0.0F) {
+            y = height1;
+        }
+
+        if (y > Global.getSettings().getScreenHeight()) {
+            y = Global.getSettings().getScreenHeight() - 10.0F;
+        }
+
+        ui.init(panelAPI, x, y, false);
+    }
     @Override
     public void processInput(List<InputEventAPI> events) {
 

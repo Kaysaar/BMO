@@ -350,6 +350,6 @@ public class MarketDialog extends BasePopUpDialog {
     }
     public static boolean isAvailableToBuild(Industry ind,MarketAPI market){
         boolean exceededLimit = ind.isIndustry()&& Misc.getMaxIndustries(ind.getMarket())<=Misc.getNumIndustries(market);
-        return  ind.isAvailableToBuild()&&!exceededLimit&&Global.getSector().getPlayerFleet().getCargo().getCredits().get()>=ind.getBuildCost();
+        return  ind.isAvailableToBuild()&&!exceededLimit&&Global.getSector().getPlayerFleet().getCargo().getCredits().get()>=ind.getBuildCost()&&!market.getConstructionQueue().hasItem(ind.getSpec().getId());
     }
 }

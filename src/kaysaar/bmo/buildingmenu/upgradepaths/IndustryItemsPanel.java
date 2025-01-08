@@ -25,7 +25,7 @@ public class IndustryItemsPanel implements CustomUIPanelPlugin {
         float seperator = 20f;
         float total = iconSize+seperator;
         Set<String> items = BuildingMenuMisc.getItemsForIndustry(ind.getSpec().getId(),hovers);
-        float maxItemsPerRow = total*items.size()-seperator;
+        float maxItemsPerRow = (int)(Math.floor(width/(total)));
         int amountofRows = (int) Math.ceil(items.size()/maxItemsPerRow);
         if(amountofRows==0){
             amountofRows = 1;

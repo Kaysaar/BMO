@@ -212,10 +212,10 @@ public class IndustryTable extends UITableImpl {
     }
 
     public boolean shouldShowIndustry(Industry ind) {
-        if (ind.isAvailableToBuild()) {
+        if (MarketDialog.isAvailableToBuild(ind,ind.getMarket())) {
             return !market.hasIndustry(ind.getSpec().getId());
         } else {
-            return ind.showWhenUnavailable() && !market.hasIndustry(ind.getSpec().getId());
+            return ind.showWhenUnavailable() && !market.hasIndustry(ind.getSpec().getId())&&!market.getConstructionQueue().hasItem(ind.getSpec().getId());
         }
     }
 

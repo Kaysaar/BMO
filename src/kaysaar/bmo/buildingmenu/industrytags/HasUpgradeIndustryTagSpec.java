@@ -19,9 +19,8 @@ public class HasUpgradeIndustryTagSpec extends IndustryTagSpec{
         for (IndustryDropDownButton industryDropDownButton : buttonsExisting) {
             for (IndustrySpecAPI o : industryDropDownButton.getSpecs()) {
                 if(specs.contains(o.getId())){
-                    Industry ind = o.getNewPluginInstance(market);
                     if(!BuildingMenuMisc.getIndustryTree(o.getId()).isEmpty()){
-                        toReturn.add(ind.getId());
+                        toReturn.add(o.getId());
                     }
                 }
             }
