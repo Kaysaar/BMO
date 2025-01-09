@@ -108,13 +108,14 @@ public class IndustryTable extends UITableImpl {
         Set<String> btGen = new LinkedHashSet<>();
         Set<String>btMod = new LinkedHashSet<>();
         Set<String>allMods = new LinkedHashSet<>();
+        ArrayList<IndustryDropDownButton>bts = getListConverted();
         for (IndustryTagSpec tagSpec : tagsGen) {
-            allMods.addAll(tagSpec.getSpecIdsForMatchup(market, getListConverted()));
-            btGen.addAll(tagSpec.getSpecIdsForMatchup(market, getListConverted()));
+            allMods.addAll(tagSpec.getSpecIdsForMatchup(market,bts));
+            btGen.addAll(tagSpec.getSpecIdsForMatchup(market, bts));
         }
         for (IndustryTagSpec tagSpec : tagsMod) {
-            allMods.addAll(tagSpec.getSpecIdsForMatchup(market, getListConverted()));
-            btMod.addAll(tagSpec.getSpecIdsForMatchup(market, getListConverted()));
+            allMods.addAll(tagSpec.getSpecIdsForMatchup(market, bts));
+            btMod.addAll(tagSpec.getSpecIdsForMatchup(market, bts));
         }
         Set<String>together = new LinkedHashSet<>();
         for (String allMod : allMods) {
@@ -136,8 +137,8 @@ public class IndustryTable extends UITableImpl {
         sortDBList();
         ArrayList<DropDownButton>bt = new ArrayList<>();
         for (String s : together) {
-            if(!bt.contains(getButtonForSpec(s))){
-                bt.add(getButtonForSpec(s));
+            if(!bt.contains(getButtonForSpecFromList(s,bts))){
+                bt.add(getButtonForSpecFromList(s,bts));
 
             }
         }
@@ -146,8 +147,8 @@ public class IndustryTable extends UITableImpl {
 
     }
 
-    public IndustryDropDownButton getButtonForSpec(String id){
-        for (IndustryDropDownButton industryDropDownButton : getListConverted()) {
+    public IndustryDropDownButton getButtonForSpecFromList(String id,ArrayList<IndustryDropDownButton>bt){
+        for (IndustryDropDownButton industryDropDownButton : bt) {
             for (IndustrySpecAPI spec : industryDropDownButton.getSpecs()) {
                 if(spec.getId().equals(id)){
                     return industryDropDownButton;

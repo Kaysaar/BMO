@@ -5,6 +5,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.IntervalUtil;
 import com.fs.starfarer.api.util.Misc;
+import kaysaar.bmo.buildingmenu.IndustryDropDownButton;
 import kaysaar.bmo.buildingmenu.MarketDialog;
 import kaysaar.bmo.buildingmenu.industrytags.IndustryTagManager;
 import kaysaar.bmo.buildingmenu.industrytags.IndustryTagSpec;
@@ -38,15 +39,16 @@ public class TagFilterPopUp extends PopUpUI {
         mainPanel = panelAPI.createCustomPanel(panelAPI.getPosition().getWidth(), panelAPI.getPosition().getHeight(), null);
         TooltipMakerAPI tooltip = mainPanel.createUIElement(panelAPI.getPosition().getWidth() + 5, panelAPI.getPosition().getHeight(), true);
         tooltip.addSectionHeading("Generic Filters", Alignment.MID, 0f);
+        ArrayList<IndustryDropDownButton> bt = marketDialog.table.getListConverted();
         for (IndustryTagSpec spec : IndustryTagManager.getTagsSpecBasedOnType(IndustryTagType.GENERIC)) {
-            ArrayList<String>sp = spec.getSpecIdsForMatchup(marketDialog.market, marketDialog.table.getListCopyConverted());
+            ArrayList<String>sp = spec.getSpecIdsForMatchup(marketDialog.market,bt);
             if (sp.isEmpty()) continue;
             createLabel(panelAPI, spec, sp, tooltip);
 
         }
         tooltip.addSectionHeading("Mods", Alignment.MID, 5f);
         for (IndustryTagSpec spec : IndustryTagManager.getTagsSpecBasedOnType(IndustryTagType.MOD)) {
-            ArrayList<String>sp = spec.getSpecIdsForMatchup(marketDialog.market, marketDialog.table.getListCopyConverted());
+            ArrayList<String>sp = spec.getSpecIdsForMatchup(marketDialog.market,bt);
             if (sp.isEmpty()) continue;
             createLabel(panelAPI, spec, sp, tooltip);
 
