@@ -84,10 +84,11 @@ public class BmoModPlugin extends BaseModPlugin {
 
             path = new CustomUpgradePath(1,2);
             map = new LinkedHashMap<>();
-            map.put("fishery", new Vector2f(0,0));
-            map.put("aquaculture", new Vector2f(0,1));
+
+            map.put("aquaculture", new Vector2f(0,0));
+            map.put("fishery", new Vector2f(0,1));
             path.setIndustryCoordinates(map);
-            UpgradePathManager.getInstance().addNewCustomPath(path,"fishery");
+            UpgradePathManager.getInstance().addNewCustomPath(path,"aquaculture");
 
             path = new CustomUpgradePath(4,5);
             map = new LinkedHashMap<>();

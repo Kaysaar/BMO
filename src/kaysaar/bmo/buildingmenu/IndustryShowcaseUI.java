@@ -10,10 +10,7 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.impl.campaign.econ.impl.BaseIndustry;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.loading.IndustrySpecAPI;
-import com.fs.starfarer.api.ui.ButtonAPI;
-import com.fs.starfarer.api.ui.CustomPanelAPI;
-import com.fs.starfarer.api.ui.PositionAPI;
-import com.fs.starfarer.api.ui.TooltipMakerAPI;
+import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.IntervalUtil;
 import kaysaar.bmo.buildingmenu.upgradepaths.CustomUpgradePath;
 import kaysaar.bmo.buildingmenu.upgradepaths.UpgradePathManager;
@@ -54,7 +51,8 @@ public class IndustryShowcaseUI implements CustomUIPanelPlugin {
 
     public void createIndustryPanel(){
         subTooltip.setTitleOrbitronLarge();
-        subTooltip.addTitle(currentSpec.getName());
+        LabelAPI label = subTooltip.addTitle(currentSpec.getName());
+        label.getPosition().inTL((mainPanel.getPosition().getWidth()/2)-(label.computeTextWidth(label.getText())/2),0);
         UILinesRenderer renderer = new UILinesRenderer(0f);
         ImagePanel panel = new ImagePanel();
         CustomPanelAPI panelHolder = holderPanel.createCustomPanel(mainPanel.getPosition().getWidth(),95,renderer);
@@ -63,10 +61,10 @@ public class IndustryShowcaseUI implements CustomUIPanelPlugin {
         panel.init(panelImage,Global.getSettings().getSprite(currentSpec.getNewPluginInstance(market).getCurrentImage()));
         panelHolder.addComponent(panelImage).inTL(mainPanel.getPosition().getWidth()/2-95,0);
 
-        subTooltip.addCustom(panelHolder,7f);
+        subTooltip.addCustom(panelHolder,0f).getPosition().inTL(0,-label.getPosition().getY()+7);
         BuildingMenuMisc.createTooltipForIndustry((BaseIndustry) currentSpec.getNewPluginInstance(market), Industry.IndustryTooltipMode.ADD_INDUSTRY,mainTooltip,expanded,false,mainPanel.getPosition().getWidth(),true,false);
         if(!BuildingMenuMisc.getIndustryTree(currentSpec.getId()).isEmpty()){
-            buttonForUpgrade = buttonTooltip.addButton("Show industry upgrade path",null,mainPanel.getPosition().getWidth(),20,0f);
+            buttonForUpgrade = buttonTooltip.addButton("Show industry upgrade path",null,market.getFaction().getBaseUIColor(),market.getFaction().getDarkUIColor(),Alignment.MID,CutStyle.ALL,mainPanel.getPosition().getWidth(),20,0f);
             buttonForUpgrade.getPosition().inTL(0,0);
         }
         holderPanel.addUIElement(mainTooltip).inTL(0,130);

@@ -54,9 +54,9 @@ public class IndustryTable extends UITableImpl {
 
     @Override
     public void createSections() {
-        Color base = Misc.getBasePlayerColor();
-        Color bg = Misc.getDarkPlayerColor();
-        Color bright = Misc.getBrightPlayerColor();
+        Color base = market.getFaction().getBaseUIColor();
+        Color bg = market.getFaction().getDarkUIColor();
+        Color bright = market.getFaction().getBrightUIColor();
         buttonName = tooltipOfButtons.addAreaCheckbox("Name", SortingState.ASCENDING, base, bg, bright, 270, 20, 0f);
         buttonType = tooltipOfButtons.addAreaCheckbox("Type", SortingState.NON_INITIALIZED, base, bg, bright, 90, 20, 0f);
         buttonDays = tooltipOfButtons.addAreaCheckbox("Build time", SortingState.NON_INITIALIZED, base, bg, bright, 125, 20, 0f);

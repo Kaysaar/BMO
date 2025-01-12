@@ -19,6 +19,9 @@ public class IndustrySearchPanel implements CustomUIPanelPlugin {
         mainPanel = Global.getSettings().createCustom(width,height,this);
         TooltipMakerAPI tooltip = mainPanel.createUIElement(width,height,false);
         textField = tooltip.addTextField(width,height,Fonts.DEFAULT_SMALL,0f);
+        textField.setColor(tableInstance.market.getFaction().getBrightUIColor());
+        textField.setBgColor(tableInstance.market.getFaction().getDarkUIColor());
+        textField.setBorderColor(tableInstance.market.getFaction().getDarkUIColor());
         mainPanel.addUIElement(tooltip).inTL(0,0);
 
     }

@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 public class TagFilterPopUp extends PopUpUI {
     MarketDialog marketDialog;
     CustomPanelAPI mainPanel;
+
     LinkedHashMap<String, IndustryTagSpec>tagFilterLinkedHashMap = new LinkedHashMap<>();
     ArrayList<ButtonAPI>buttons = new ArrayList<>();
     public TagFilterPopUp(MarketDialog dialog) {
@@ -38,7 +39,7 @@ public class TagFilterPopUp extends PopUpUI {
     public float createUIMockup(CustomPanelAPI panelAPI) {
         mainPanel = panelAPI.createCustomPanel(panelAPI.getPosition().getWidth(), panelAPI.getPosition().getHeight(), null);
         TooltipMakerAPI tooltip = mainPanel.createUIElement(panelAPI.getPosition().getWidth() + 5, panelAPI.getPosition().getHeight(), true);
-        tooltip.addSectionHeading("Generic Filters", Alignment.MID, 0f);
+        tooltip.addSectionHeading("Generic Filters",marketDialog.market.getFaction().getBaseUIColor(),marketDialog.market.getFaction().getDarkUIColor(), Alignment.MID, 0f);
         ArrayList<IndustryDropDownButton> bt = marketDialog.table.getListConverted();
         for (IndustryTagSpec spec : IndustryTagManager.getTagsSpecBasedOnType(IndustryTagType.GENERIC)) {
             ArrayList<String>sp = spec.getSpecIdsForMatchup(marketDialog.market,bt);
@@ -46,7 +47,7 @@ public class TagFilterPopUp extends PopUpUI {
             createLabel(panelAPI, spec, sp, tooltip);
 
         }
-        tooltip.addSectionHeading("Mods", Alignment.MID, 5f);
+        tooltip.addSectionHeading("Mods",marketDialog.market.getFaction().getBaseUIColor(),marketDialog.market.getFaction().getDarkUIColor(), Alignment.MID, 5f);
         for (IndustryTagSpec spec : IndustryTagManager.getTagsSpecBasedOnType(IndustryTagType.MOD)) {
             ArrayList<String>sp = spec.getSpecIdsForMatchup(marketDialog.market,bt);
             if (sp.isEmpty()) continue;
@@ -70,7 +71,7 @@ public class TagFilterPopUp extends PopUpUI {
     private  void createLabel(CustomPanelAPI panelAPI, IndustryTagSpec spec, ArrayList<String> sp, TooltipMakerAPI tooltip) {
         CustomPanelAPI panelToCreate = Global.getSettings().createCustom(panelAPI.getPosition().getWidth(), 20, null);
         TooltipMakerAPI tooltipButton = panelToCreate.createUIElement(panelAPI.getPosition().getWidth(), 20, false);
-        ButtonAPI button  = tooltipButton.addCheckbox(20, 20, spec.tagName+" ("+ sp.size()+")", spec, Fonts.DEFAULT_SMALL, Misc.getButtonTextColor(), ButtonAPI.UICheckboxSize.SMALL, 0f);
+        ButtonAPI button  = tooltipButton.addCheckbox(20, 20, spec.tagName+" ("+ sp.size()+")", spec, Fonts.DEFAULT_SMALL, marketDialog.market.getFaction().getBaseUIColor(), ButtonAPI.UICheckboxSize.SMALL, 0f);
         if(tagFilterLinkedHashMap.get(spec.tag)!=null){
             button.setChecked(true);
         }

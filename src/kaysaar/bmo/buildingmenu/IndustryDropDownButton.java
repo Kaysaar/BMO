@@ -42,17 +42,17 @@ public class IndustryDropDownButton extends DropDownButton {
             buttons = new ArrayList<>();
             if(droppableMode){
                 for (IndustrySpecAPI subSpec : subSpecs) {
-                    IndustryButton button = new IndustryButton(width-30,height,subSpec,10f,market, Misc.getDarkPlayerColor(),Misc.getDarkPlayerColor(),Misc.getDarkPlayerColor(),false);
+                    IndustryButton button = new IndustryButton(width-30,height,subSpec,10f,market, market.getFaction().getBaseUIColor(),market.getFaction().getDarkUIColor(),market.getFaction().getDarkUIColor(),false);
                     button.initializeUI();
                     buttons.add(button);
                 }
             }
             if(droppableMode){
-                mainButton = new IndustryButton(width-20,height,mainSpec,0f,market,Misc.getDarkHighlightColor(),Misc.getDarkPlayerColor(),Misc.getDarkHighlightColor(),true);
+                mainButton = new IndustryButton(width-20,height,mainSpec,0f,market,Misc.getDarkHighlightColor(),market.getFaction().getDarkUIColor(),Misc.getDarkHighlightColor(),true);
 
             }
             else{
-                mainButton = new IndustryButton(width-20,height,mainSpec,0f,market, Misc.getDarkPlayerColor(),Misc.getDarkPlayerColor(),Misc.getDarkPlayerColor(),false);
+                mainButton = new IndustryButton(width-20,height,mainSpec,0f,market, market.getFaction().getBaseUIColor(),market.getFaction().getDarkUIColor(),market.getFaction().getBrightUIColor(),false);
 
             }
             mainButton.initializeUI();

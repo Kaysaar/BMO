@@ -26,8 +26,8 @@ public class IndustryTagFilter implements CustomUIPanelPlugin {
         mainPanel = Global.getSettings().createCustom(width,height,this);
         float buttonWidth = ((width-5f) / 2f);
         TooltipMakerAPI tooltip = mainPanel.createUIElement(width,height,false);
-        buttonReset =tooltip.addButton("Reset filters",null, Misc.getBasePlayerColor(),Misc.getDarkPlayerColor(), Alignment.MID,CutStyle.NONE,buttonWidth,height,0f);
-        buttonToShowcaseFilters =tooltip.addButton("Change filters",null, Misc.getBasePlayerColor(),Misc.getDarkPlayerColor(), Alignment.MID,CutStyle.NONE,buttonWidth,height,0f);
+        buttonReset =tooltip.addButton("Reset filters",null, marketDialog.market.getFaction().getBaseUIColor(),marketDialog.market.getFaction().getDarkUIColor(), Alignment.MID,CutStyle.NONE,buttonWidth,height,0f);
+        buttonToShowcaseFilters =tooltip.addButton("Change filters",null, marketDialog.market.getFaction().getBaseUIColor(),marketDialog.market.getFaction().getDarkUIColor(), Alignment.MID,CutStyle.NONE,buttonWidth,height,0f);
         buttonToShowcaseFilters.getPosition().inTL(buttonWidth+10f,0);
         mainPanel.addUIElement(tooltip).inTL(0,0);
 

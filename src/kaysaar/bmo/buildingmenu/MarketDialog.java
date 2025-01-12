@@ -236,14 +236,14 @@ public class MarketDialog extends BasePopUpDialog {
     }
 @Override
     public ButtonAPI generateConfirmButton(TooltipMakerAPI tooltip){
-        ButtonAPI button = tooltip.addButton("Build","confirm", Misc.getBasePlayerColor(),Misc.getDarkPlayerColor(), Alignment.MID, CutStyle.TL_BR,160,25,0f);
+        ButtonAPI button = tooltip.addButton("Build","confirm",market.getFaction().getBaseUIColor(),market.getFaction().getDarkUIColor(), Alignment.MID, CutStyle.TL_BR,160,25,0f);
         button.setShortcut(Keyboard.KEY_G,true);
         confirmButton = button;
         return button;
     }
     @Override
     public ButtonAPI generateCancelButton(TooltipMakerAPI tooltip){
-        ButtonAPI button = tooltip.addButton("Dismiss","cancel", Misc.getBasePlayerColor(),Misc.getDarkPlayerColor(),Alignment.MID,CutStyle.TL_BR,buttonConfirmWidth,25,0f);
+        ButtonAPI button = tooltip.addButton("Dismiss","cancel", market.getFaction().getBaseUIColor(),market.getFaction().getDarkUIColor(),Alignment.MID,CutStyle.TL_BR,buttonConfirmWidth,25,0f);
         button.setShortcut(Keyboard.KEY_A,true);
         cancelButton = button;
         return button;

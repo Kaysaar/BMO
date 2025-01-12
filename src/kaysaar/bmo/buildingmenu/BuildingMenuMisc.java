@@ -359,16 +359,16 @@ public class BuildingMenuMisc {
             title = tooltip.addTitle("");
         }
         if (!mod.equalsIgnoreCase("vanilla") && !ind.getSpec().hasTag("parent_item")) {
-            tooltip.addSectionHeading("Mod", Alignment.MID, 5f);
+            tooltip.addSectionHeading("Mod",ind.getMarket().getFaction().getBaseUIColor(),ind.getMarket().getFaction().getDarkUIColor(), Alignment.MID, 5f);
             tooltip.addPara("This industry is from %s", 5f, Color.ORANGE, mod);
-            tooltip.addSectionHeading("", Alignment.MID, 5f);
+            tooltip.addSectionHeading("",ind.getMarket().getFaction().getBaseUIColor(),ind.getMarket().getFaction().getDarkUIColor(), Alignment.MID, 5f);
         }
 
         CustomPanelAPI testT = Global.getSettings().createCustom(width, 2, null);
         TooltipMakerAPI tTooltip1 = testT.createUIElement(testT.getPosition().getWidth(), 20, true);
-        ind.createTooltip(Industry.IndustryTooltipMode.ADD_INDUSTRY, tTooltip1, expanded);
+        ind.createTooltip(mode, tTooltip1, expanded);
         TooltipMakerAPI tTooltip = testT.createUIElement(testT.getPosition().getWidth(), tTooltip1.getHeightSoFar(), false);
-        ind.createTooltip(Industry.IndustryTooltipMode.ADD_INDUSTRY, tTooltip, expanded);
+        ind.createTooltip(mode, tTooltip, expanded);
         UIPanelAPI componentAPI = (UIPanelAPI) BuildingMenuMisc.getChildren(tTooltip).get(0);
         if (hasTitle) {
             title.setText(((LabelAPI) BuildingMenuMisc.getChildren(componentAPI).get(0)).getText());
@@ -381,7 +381,7 @@ public class BuildingMenuMisc {
         Color gray = Misc.getGrayColor();
         Color color = faction.getBaseUIColor();
         Color dark = faction.getDarkUIColor();
-        if (!getItemsForIndustry(ind.getSpec().getId(), isHover).isEmpty() && mode == Industry.IndustryTooltipMode.ADD_INDUSTRY) {
+        if (!getItemsForIndustry(ind.getSpec().getId(), isHover).isEmpty() && (mode == Industry.IndustryTooltipMode.ADD_INDUSTRY||mode== Industry.IndustryTooltipMode.UPGRADE)) {
             tooltip.addSectionHeading("Installable Items", color, dark, Alignment.MID, opad);
             if (!isHover) {
                 tooltip.addPara("These items can be installed either in this industry, or in one of it's upgraded versions, as long as all requirements are met.", gray, opad);
