@@ -213,7 +213,7 @@ public class IndustryTable extends UITableImpl {
     }
 
     public boolean shouldShowIndustry(Industry ind) {
-        if (MarketDialog.isAvailableToBuild(ind,ind.getMarket())) {
+        if (MarketDialog.isAvailableToBuild(ind,ind.getMarket(),false)) {
             return !market.hasIndustry(ind.getSpec().getId());
         } else {
             return ind.showWhenUnavailable() && !market.hasIndustry(ind.getSpec().getId())&&!market.getConstructionQueue().hasItem(ind.getSpec().getId());
@@ -333,6 +333,6 @@ public class IndustryTable extends UITableImpl {
         IndustryButton bt = (IndustryButton) buttonPressed;
         specToBuilt = bt.spec;
         dialog.showcaseUI.setCurrentSpec(specToBuilt);
-        dialog.showcaseUI.recreateIndustryPanel();
+        dialog.showcaseUI.recreateIndustryPanel(false);
     }
 }

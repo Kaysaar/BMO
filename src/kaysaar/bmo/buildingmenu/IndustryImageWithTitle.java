@@ -5,6 +5,7 @@ import ashlib.data.plugins.ui.plugins.UILinesRenderer;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CustomUIPanelPlugin;
 import com.fs.starfarer.api.input.InputEventAPI;
+import com.fs.starfarer.api.ui.ButtonAPI;
 import com.fs.starfarer.api.ui.CustomPanelAPI;
 import com.fs.starfarer.api.ui.PositionAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
@@ -15,7 +16,9 @@ public class IndustryImageWithTitle implements CustomUIPanelPlugin {
 
     CustomPanelAPI mainPanel;
     String industryId;
-    public IndustryImageWithTitle(String industryId) {
+    ButtonAPI buildButton;
+
+    public IndustryImageWithTitle(String industryId,boolean doesHaveBuildButton) {
         this.industryId = industryId;
         UILinesRenderer renderer = new UILinesRenderer(0f);
         mainPanel = Global.getSettings().createCustom(190,110,renderer);
@@ -27,6 +30,10 @@ public class IndustryImageWithTitle implements CustomUIPanelPlugin {
         renderer.setPanel(panelImage);
         panel.init(panelImage,Global.getSettings().getSprite(Global.getSettings().getIndustrySpec(industryId).getImageName()));
         tooltip.addCustom(panelImage,2f);
+        if(doesHaveBuildButton){
+           buildButton = tooltip.addButton("Queue",null,70,20,5f);
+
+        }
         mainPanel.addUIElement(tooltip).inTL(0,0);
 
     }
@@ -52,6 +59,10 @@ public class IndustryImageWithTitle implements CustomUIPanelPlugin {
     @Override
     public void render(float alphaMult) {
 
+    }
+
+    public ButtonAPI getBuildButton() {
+        return buildButton;
     }
 
     @Override

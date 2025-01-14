@@ -21,7 +21,7 @@ public class AvailableIndustryTagSpec extends IndustryTagSpec {
             for (IndustrySpecAPI o : industryDropDownButton.getSpecs()) {
                 if(specs.contains(o.getId())){
                     Industry ind = o.getNewPluginInstance(market);
-                    if(MarketDialog.isAvailableToBuild(ind,market)){
+                    if(MarketDialog.isAvailableToBuild(ind,market,false)){
                         toReturn.add(ind.getId());
                     }
                 }

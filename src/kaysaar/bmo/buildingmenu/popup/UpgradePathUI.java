@@ -25,11 +25,14 @@ public class UpgradePathUI extends PopUpUI {
     float spacers = 5f;
     float spaceBetweenRows = 50f;
     float imagewidth = 195;
-    float imageheight = 110;
+    float imageheight = 130;
     public float width, height;
     CustomPanelAPI mainPanel;
     MarketDialog marketDialog;
     TooltipMakerAPI tooltip;
+
+
+
     ArrayList<IndustryImageWithTitle> imageWithTitles = new ArrayList<>();
 
     public UpgradePathUI(CustomUpgradePath upgradePath, MarketDialog dialog) {
@@ -49,8 +52,10 @@ public class UpgradePathUI extends PopUpUI {
     public float createUIMockup(CustomPanelAPI panelAPI) {
         mainPanel = panelAPI.createCustomPanel(panelAPI.getPosition().getWidth(), panelAPI.getPosition().getHeight(), null);
         TooltipMakerAPI tooltip = mainPanel.createUIElement(panelAPI.getPosition().getWidth() , panelAPI.getPosition().getHeight(), true);
+        boolean did = false;
         for (final Map.Entry<String, Vector2f> entry : upgradePath.getIndustryCoordinates().entrySet()) {
-            IndustryImageWithTitle title = new IndustryImageWithTitle(entry.getKey());
+            IndustryImageWithTitle title = new IndustryImageWithTitle(entry.getKey(),did);
+            did =true;
             tooltip.addCustom(title.getMainPanel(), 0f).getPosition().inTL(calculateX(entry.getValue().x), calculateY(entry.getValue().y));
             tooltip.addTooltipToPrevious(new TooltipMakerAPI.TooltipCreator() {
                 @Override
@@ -66,7 +71,7 @@ public class UpgradePathUI extends PopUpUI {
                 @Override
                 public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
                     BaseIndustry ind = (BaseIndustry) Global.getSettings().getIndustrySpec(entry.getKey()).getNewPluginInstance(marketDialog.market);
-                    BuildingMenuMisc.createTooltipForIndustry(ind, Industry.IndustryTooltipMode.ADD_INDUSTRY,tooltip,expanded,true,400,true,true);
+                    BuildingMenuMisc.createTooltipForIndustry(ind, Industry.IndustryTooltipMode.ADD_INDUSTRY,tooltip,expanded,true,400,true,true,true);
                 }
             }, TooltipMakerAPI.TooltipLocation.RIGHT,false);
             imageWithTitles.add(title);
@@ -146,6 +151,23 @@ public class UpgradePathUI extends PopUpUI {
         return p2.getCenterY() - (p2.getHeight() / 2);
     }
 
+    @Override
+    public void advance(float amount) {
+        super.advance(amount);
+        for (IndustryImageWithTitle imageWithTitle : imageWithTitles) {
+            if(imageWithTitle.getBuildButton()!=null){
+                if(imageWithTitle.getBuildButton().isChecked()){
+                    imageWithTitle.getBuildButton().setChecked(false);
+                    marketDialog.table.specToBuilt = Global.getSettings().getIndustrySpec(imageWithTitle.getIndustryId());
+                    marketDialog.showcaseUI.setCurrentSpec(marketDialog.table.specToBuilt);
+                    marketDialog.setInUpgradeMode(true);
+                    marketDialog.showcaseUI.recreateIndustryPanel(true);
+                    forceDismiss();
+                    return;
+                }
+            }
+        }
+    }
 
     @Override
     public void onExit() {

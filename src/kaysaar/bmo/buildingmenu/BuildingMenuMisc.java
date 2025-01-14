@@ -15,11 +15,13 @@ import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo;
 import com.fs.starfarer.api.impl.campaign.ids.Industries;
 import com.fs.starfarer.api.impl.campaign.ids.Items;
 import com.fs.starfarer.api.impl.campaign.ids.Strings;
+import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin;
 import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.Pair;
 import com.fs.starfarer.ui.P;
+import kaysaar.bmo.buildingmenu.additionalreq.AdditionalReqManager;
 import kaysaar.bmo.buildingmenu.industrytags.IndustryTagManager;
 import kaysaar.bmo.buildingmenu.upgradepaths.IndustryItemsPanel;
 
@@ -333,6 +335,7 @@ public class BuildingMenuMisc {
 
     public static Set<IndustrySpecAPI> getIndustryTree(String progenitor) {
         Set<IndustrySpecAPI> specs = new LinkedHashSet<>();
+        if(!AshMisc.isStringValid(progenitor))return specs;
         for (IndustrySpecAPI allIndustrySpec : Global.getSettings().getAllIndustrySpecs()) {
             if (allIndustrySpec.getDowngrade() == null) continue;
             IndustrySpecAPI currentOne = allIndustrySpec;
@@ -349,21 +352,139 @@ public class BuildingMenuMisc {
         return specs;
     }
 
+    public static LinkedHashSet<String> getUpgradePath(String upgradeID) {
+        IndustrySpecAPI spec = Global.getSettings().getIndustrySpec(upgradeID);
+        LinkedHashSet<String> path = new LinkedHashSet<>();
+        path.add(spec.getId());
+
+        // Collect the upgrade path
+        while (spec.getDowngrade() != null) {
+            if (spec.getDowngrade().equals(spec.getId())) {
+                break;
+            }
+            spec = Global.getSettings().getIndustrySpec(spec.getDowngrade());
+            path.add(spec.getId());
+        }
+
+        // Reverse the path
+        LinkedList<String> reversedList = new LinkedList<>(path);
+        LinkedHashSet<String> reversedPath = new LinkedHashSet<>();
+        for (int i = reversedList.size() - 1; i >= 0; i--) {
+            reversedPath.add(reversedList.get(i));
+        }
+
+        return reversedPath;
+    }
+
+    public static ArrayList<String> getOtherReasons(String id, MarketAPI market) {
+        ArrayList<String> strs = new ArrayList<>();
+        Industry ind = Global.getSettings().getIndustrySpec(id).getNewPluginInstance(market);
+        if (!ind.isAvailableToBuild() && ind.getUnavailableReason() != null) {
+            strs.add(ind.getUnavailableReason());
+        }
+        if (!AdditionalReqManager.getInstance().doesMetReq(id, market)) {
+            strs.add(AdditionalReqManager.getInstance().getReq(id).getReason(market, id));
+        }
+        return strs;
+
+    }
+
+    public static Pair<Float, Float> getCostAndTimeFromPath(LinkedHashSet<String> path, MarketAPI market) {
+        Pair<Float, Float> money = new Pair<>(0f, 0f);
+        for (String s : path) {
+            Industry ind = Global.getSettings().getIndustrySpec(s).getNewPluginInstance(market);
+            money.one += ind.getBuildCost();
+            money.two += ind.getBuildTime();
+        }
+        return money;
+    }
+
+    public static boolean canBuildAllInPath(String master, MarketAPI market) {
+        float money = 0f;
+        boolean metAllAvailable = true;
+        for (String s : getUpgradePath(master)) {
+            Industry ind = Global.getSettings().getIndustrySpec(s).getNewPluginInstance(market);
+            if (!ind.isAvailableToBuild() || !AdditionalReqManager.getInstance().doesMetReq(ind.getSpec().getId(), market)) {
+                metAllAvailable = false;
+                break;
+            }
+            money += ind.getBuildCost();
+        }
+        return metAllAvailable && money <= Global.getSector().getPlayerFleet().getCargo().getCredits().get();
+
+    }
+
+    public static boolean canBuildAllInPathIgnoreLast(String master, MarketAPI market) {
+        float money = 0f;
+        boolean metAllAvailable = true;
+        for (String s : getUpgradePath(master)) {
+            Industry ind = Global.getSettings().getIndustrySpec(s).getNewPluginInstance(market);
+            if(ind.getSpec().getId().equals(master))continue;
+            if (!ind.isAvailableToBuild() || !AdditionalReqManager.getInstance().doesMetReq(ind.getSpec().getId(), market)) {
+
+                metAllAvailable = false;
+
+            }
+            money += ind.getBuildCost();
+        }
+        return metAllAvailable && money <= Global.getSector().getPlayerFleet().getCargo().getCredits().get();
+
+    }
+
     public static void createTooltipForIndustry(
-            BaseIndustry ind, Industry.IndustryTooltipMode mode, TooltipMakerAPI tooltip, boolean expanded, boolean hasTitle, float width, boolean showMods, boolean isHover) {
+            BaseIndustry ind, Industry.IndustryTooltipMode mode, TooltipMakerAPI tooltip, boolean expanded, boolean hasTitle, float width, boolean showMods, boolean isHover, boolean isInQueue) {
         float pad = 3f;
         float opad = 10f;
         String mod = IndustryTagManager.getModNameForInd(ind.getSpec().getId());
         LabelAPI title = null;
+
+        Color gray = Misc.getGrayColor();
+        Color highlight = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
         if (hasTitle) {
             title = tooltip.addTitle("");
         }
         if (!mod.equalsIgnoreCase("vanilla") && !ind.getSpec().hasTag("parent_item")) {
-            tooltip.addSectionHeading("Mod",ind.getMarket().getFaction().getBaseUIColor(),ind.getMarket().getFaction().getDarkUIColor(), Alignment.MID, 5f);
+            tooltip.addSectionHeading("Mod", ind.getMarket().getFaction().getBaseUIColor(), ind.getMarket().getFaction().getDarkUIColor(), Alignment.MID, 5f);
             tooltip.addPara("This industry is from %s", 5f, Color.ORANGE, mod);
-            tooltip.addSectionHeading("",ind.getMarket().getFaction().getBaseUIColor(),ind.getMarket().getFaction().getDarkUIColor(), Alignment.MID, 5f);
         }
+        if (isInQueue) {
+            tooltip.addSectionHeading("Queue upgrade", ind.getMarket().getFaction().getBaseUIColor(), ind.getMarket().getFaction().getDarkUIColor(), Alignment.MID, 5f);
+            Pair<Float, Float> data = BuildingMenuMisc.getCostAndTimeFromPath(getUpgradePath(ind.getSpec().getId()), ind.getMarket());
+            int days = data.two.intValue();
+            String daysStr = "days";
+            if (days == 1) daysStr = "day";
+            String costStr = Misc.getDGSCredits(data.one);
+            String creditsStr = Misc.getDGSCredits(Global.getSector().getPlayerFleet().getCargo().getCredits().get());
+            LabelAPI label = tooltip.addPara("%s and %s " + daysStr + " to build. You have %s.", opad,
+                    highlight, costStr, "" + days, creditsStr);
+            label.setHighlight(costStr, "" + days, creditsStr);
+            if (Global.getSector().getPlayerFleet().getCargo().getCredits().get() >= data.one) {
+                label.setHighlightColors(highlight, highlight, highlight);
+            } else {
+                label.setHighlightColors(bad, highlight, highlight);
+            }
+            tooltip.addPara("After confirming it will start queue, that will automatically upgrade industry.", Misc.getTooltipTitleAndLightHighlightColor(), 5f);
+            if (!BuildingMenuMisc.canBuildAllInPathIgnoreLast(ind.getSpec().getId(), ind.getMarket())) {
+                tooltip.addPara("Note!: One of requirements for subsequent industries in queue is not met", Misc.getNegativeHighlightColor(), 5f);
+            }
+            if (!expanded) {
+                tooltip.addPara("Press %s for more info", 5f, Color.ORANGE, "F1");
+            } else {
+                for (String s : BuildingMenuMisc.getUpgradePath(ind.getSpec().getId())) {
+                    tooltip.addPara(Global.getSettings().getIndustrySpec(s).getName(), Misc.getButtonTextColor(), 5f);
+                    boolean added = false;
+                    for (String otherReason : BuildingMenuMisc.getOtherReasons(s, ind.getMarket())) {
+                        tooltip.addPara(BaseIntelPlugin.BULLET + otherReason, Misc.getNegativeHighlightColor(), 3f);
+                        added = true;
+                    }
+                    if (!added) {
+                        tooltip.addPara(BaseIntelPlugin.BULLET + "Met criteria", Misc.getPositiveHighlightColor(), 3f);
+                    }
+                }
+            }
 
+        }
         CustomPanelAPI testT = Global.getSettings().createCustom(width, 2, null);
         TooltipMakerAPI tTooltip1 = testT.createUIElement(testT.getPosition().getWidth(), 20, true);
         ind.createTooltip(mode, tTooltip1, expanded);
@@ -378,10 +499,9 @@ public class BuildingMenuMisc {
         testT.getPosition().setSize(width, tTooltip1.getHeightSoFar());
         tooltip.addCustom(testT, -13);
         FactionAPI faction = ind.getMarket().getFaction();
-        Color gray = Misc.getGrayColor();
         Color color = faction.getBaseUIColor();
         Color dark = faction.getDarkUIColor();
-        if (!getItemsForIndustry(ind.getSpec().getId(), isHover).isEmpty() && (mode == Industry.IndustryTooltipMode.ADD_INDUSTRY||mode== Industry.IndustryTooltipMode.UPGRADE)) {
+        if (!getItemsForIndustry(ind.getSpec().getId(), isHover).isEmpty() && (mode == Industry.IndustryTooltipMode.ADD_INDUSTRY || mode == Industry.IndustryTooltipMode.UPGRADE)) {
             tooltip.addSectionHeading("Installable Items", color, dark, Alignment.MID, opad);
             if (!isHover) {
                 tooltip.addPara("These items can be installed either in this industry, or in one of it's upgraded versions, as long as all requirements are met.", gray, opad);
@@ -419,10 +539,10 @@ public class BuildingMenuMisc {
         if (spec.hasTag("parent_item")) {
             for (IndustrySpecAPI industrySpecAPI : getSpecsOfParent(spec.getData())) {
                 IndustrySpecAPI current = industrySpecAPI;
-                if (marketToValidate.hasIndustry(current.getId())) return true;
+                if (marketToValidate.hasIndustry(current.getId())||marketToValidate.getConstructionQueue().hasItem(current.getId())) return true;
                 while (current.getUpgrade() != null) {
                     current = Global.getSettings().getIndustrySpec(current.getUpgrade());
-                    if (marketToValidate.hasIndustry(current.getId())) {
+                    if (marketToValidate.hasIndustry(current.getId())||marketToValidate.getConstructionQueue().hasItem(current.getId())) {
                         return true;
                     }
                 }
@@ -430,7 +550,7 @@ public class BuildingMenuMisc {
             return false;
         } else {
             for (IndustrySpecAPI industrySpecAPI : getIndustryTree(spec.getId())) {
-                if (marketToValidate.hasIndustry(industrySpecAPI.getId())) {
+                if (marketToValidate.hasIndustry(industrySpecAPI.getId())||marketToValidate.getConstructionQueue().hasItem(industrySpecAPI.getId())) {
                     return true;
                 }
             }

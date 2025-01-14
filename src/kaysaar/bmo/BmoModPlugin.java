@@ -7,6 +7,7 @@ import kaysaar.bmo.buildingmenu.industrytags.IndustryTagManager;
 import kaysaar.bmo.buildingmenu.tooltipinjector.ModIndustryTooltipInjector;
 import kaysaar.bmo.buildingmenu.upgradepaths.CustomUpgradePath;
 import kaysaar.bmo.buildingmenu.upgradepaths.UpgradePathManager;
+import kaysaar.bmo.buildingmenu.upgradequeue.UpdateQueueMainManager;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.LinkedHashMap;
@@ -26,6 +27,7 @@ public class BmoModPlugin extends BaseModPlugin {
     @Override
     public void onGameLoad(boolean newGame) {
         Global.getSector().addTransientScript(new BuildingUITracker());
+        Global.getSector().addTransientScript(new UpdateQueueMainManager());
         Global.getSector().getListenerManager().addListener(new ModIndustryTooltipInjector(),true);
         //Note : Should be done from AoTD side, but i dont wanna make sudden update
         if(Global.getSettings().getModManager().isModEnabled("aotd_vok")){
