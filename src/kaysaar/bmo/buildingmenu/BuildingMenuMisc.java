@@ -342,12 +342,17 @@ public class BuildingMenuMisc {
             Set<IndustrySpecAPI> specsToProgenitor = new LinkedHashSet<>();
             while (currentOne.getDowngrade() != null) {
                 specsToProgenitor.add(currentOne);
+                if(!AshMisc.isStringValid(currentOne.getDowngrade()))break;
                 if (currentOne.getDowngrade().equals(currentOne.getId())) break; // KOL, WHY
                 currentOne = Global.getSettings().getIndustrySpec(currentOne.getDowngrade());
+                if(currentOne==null)break;
             }
-            if (currentOne.getId().equals(progenitor)) {
-                specs.addAll(specsToProgenitor);
+            if(currentOne!=null){
+                if (currentOne.getId().equals(progenitor)) {
+                    specs.addAll(specsToProgenitor);
+                }
             }
+
         }
         return specs;
     }

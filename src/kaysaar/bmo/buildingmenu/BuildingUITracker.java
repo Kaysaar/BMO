@@ -12,6 +12,7 @@ import com.fs.starfarer.api.ui.CustomPanelAPI;
 import com.fs.starfarer.api.ui.UIComponentAPI;
 import com.fs.starfarer.api.ui.UIPanelAPI;
 import com.fs.starfarer.campaign.ui.marketinfo.IndustryPickerDialog;
+import com.fs.starfarer.ui.impl.StandardTooltipV2;
 import kaysaar.bmo.buildingmenu.industrytags.IndustryTagManager;
 import kaysaar.bmo.buildingmenu.upgradepaths.UpgradePathManager;
 
@@ -21,6 +22,7 @@ import java.util.List;
 
 public class BuildingUITracker implements EveryFrameScript {
     public static boolean didIt = false;
+
     private static class ReflectionUtilis {
         // Code taken and modified from Grand Colonies
         private static final Class<?> fieldClass;
@@ -107,7 +109,7 @@ public class BuildingUITracker implements EveryFrameScript {
             try {
                 Class<?> instances = instanceToModify.getClass();
                 while (instances != null) {
-                    for (Object  obj : instances.getDeclaredFields()) {
+                    for (Object obj : instances.getDeclaredFields()) {
                         setFieldAccessibleHandle.invoke(obj, true);
                         String name = (String) getFieldNameHandle.invoke(obj);
                         if (name.equals(fieldName)) {
@@ -169,7 +171,8 @@ public class BuildingUITracker implements EveryFrameScript {
             }
         }
     }
-    private static class ProductionUtil{
+
+    private static class ProductionUtil {
         public static UIPanelAPI getCoreUI() {
             CampaignUIAPI campaignUI;
             campaignUI = Global.getSector().getCampaignUI();
@@ -177,20 +180,21 @@ public class BuildingUITracker implements EveryFrameScript {
 
             CoreUIAPI core;
             if (dialog == null) {
-                core = (CoreUIAPI) ReflectionUtilis.invokeMethod("getCore",campaignUI);
-            }
-            else {
-                core = (CoreUIAPI) ReflectionUtilis.invokeMethod( "getCoreUI",dialog);
+                core = (CoreUIAPI) ReflectionUtilis.invokeMethod("getCore", campaignUI);
+            } else {
+                core = (CoreUIAPI) ReflectionUtilis.invokeMethod("getCoreUI", dialog);
             }
             return core == null ? null : (UIPanelAPI) core;
         }
 
         public static UIPanelAPI getCurrentTab() {
             UIPanelAPI coreUltimate = getCoreUI();
-            UIPanelAPI core = (UIPanelAPI) ReflectionUtilis.invokeMethod("getCurrentTab",coreUltimate);
+            UIPanelAPI core = (UIPanelAPI) ReflectionUtilis.invokeMethod("getCurrentTab", coreUltimate);
             return core == null ? null : (UIPanelAPI) core;
+
         }
     }
+
     @Override
     public boolean isDone() {
         return false;
@@ -203,24 +207,27 @@ public class BuildingUITracker implements EveryFrameScript {
 
     @Override
     public void advance(float amount) {
-        if(Global.getSector().getCampaignUI().getCurrentCoreTab()==null){
+        if (Global.getSector().getCampaignUI().getCurrentCoreTab() == null) {
             didIt = false;
             return;
         }
-        if (!didIt){
+        if (!didIt) {
             List<UIComponentAPI> panels = ReflectionUtilis.getChildrenCopy(ProductionUtil.getCoreUI());
-            if(panels.get(panels.size()-1) instanceof IndustryPickerDialog){
-                IndustryPickerDialog dialog = (IndustryPickerDialog) panels.get(panels.size()-1);
+            if (panels != null) {
+                if (panels.get(panels.size() - 1) instanceof IndustryPickerDialog) {
+                    IndustryPickerDialog dialog = (IndustryPickerDialog) panels.get(panels.size() - 1);
 
-                dialog.dismiss(1);
-                didIt = true;
-                UpgradePathManager.getInstance().rePopulate();
-                IndustryTagManager.loadDefaultTags();
-                IndustryTagManager.loadModdedTags();
-                BasePopUpDialog dialog2 = new MarketDialog(null, (MarketAPI) ReflectionUtilis.getPrivateVariable("market",ReflectionUtilis.invokeMethod("getDelegate",dialog)),ReflectionUtilis.invokeMethod("getOverview",ReflectionUtilis.invokeMethod("getDelegate",dialog)));
-                CustomPanelAPI panelAPI = Global.getSettings().createCustom(1100,700,dialog2);
-                UIPanelAPI panelAPI1  = ProductionUtil.getCoreUI();
-                dialog2.init(panelAPI,panelAPI1.getPosition().getCenterX()-(panelAPI.getPosition().getWidth()/2),panelAPI1.getPosition().getCenterY()+(panelAPI.getPosition().getHeight()/2),true);
+                    dialog.dismiss(1);
+                    didIt = true;
+                    UpgradePathManager.getInstance().rePopulate();
+                    IndustryTagManager.loadDefaultTags();
+                    IndustryTagManager.loadModdedTags();
+                    BasePopUpDialog dialog2 = new MarketDialog(null, (MarketAPI) ReflectionUtilis.getPrivateVariable("market", ReflectionUtilis.invokeMethod("getDelegate", dialog)), ReflectionUtilis.invokeMethod("getOverview", ReflectionUtilis.invokeMethod("getDelegate", dialog)));
+                    CustomPanelAPI panelAPI = Global.getSettings().createCustom(1100, 700, dialog2);
+                    UIPanelAPI panelAPI1 = ProductionUtil.getCoreUI();
+                    dialog2.init(panelAPI, panelAPI1.getPosition().getCenterX() - (panelAPI.getPosition().getWidth() / 2), panelAPI1.getPosition().getCenterY() + (panelAPI.getPosition().getHeight() / 2), true);
+
+                }
 
             }
 
