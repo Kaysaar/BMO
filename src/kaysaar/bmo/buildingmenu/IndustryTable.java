@@ -191,9 +191,10 @@ public class IndustryTable extends UITableImpl {
     public boolean cantPlace(IndustryDropDownButton button) {
         if (button.droppableMode) {
             ArrayList<IndustrySpecAPI>available = new ArrayList<>();
+            if(!shouldShowIndustryDropdown(button.mainSpec.getNewPluginInstance(market)))return true;
             if(BuildingMenuMisc.isIndustryFromTreePresent(button.mainSpec,market))return true;
             for (IndustrySpecAPI subSpec : button.getSpecs()) {
-                if (showIndustry(subSpec.getNewPluginInstance(market),subSpec)) {
+                if (showIndustryDropdown(subSpec.getNewPluginInstance(market),subSpec)) {
                     available.add(subSpec);
                 }
             }
@@ -211,15 +212,25 @@ public class IndustryTable extends UITableImpl {
     private boolean showIndustry(Industry ind, IndustrySpecAPI spec) {
         return shouldShowIndustry(ind) && !BuildingMenuMisc.isIndustryFromTreePresent(spec, market);
     }
-
+    private boolean showIndustryDropdown(Industry ind, IndustrySpecAPI spec) {
+        return shouldShowIndustryDropdown(ind) && !BuildingMenuMisc.isIndustryFromTreePresent(spec, market);
+    }
     public boolean shouldShowIndustry(Industry ind) {
+
         if (MarketDialog.isAvailableToBuild(ind,ind.getMarket(),false)) {
             return !market.hasIndustry(ind.getSpec().getId());
         } else {
             return ind.showWhenUnavailable() && !market.hasIndustry(ind.getSpec().getId())&&!market.getConstructionQueue().hasItem(ind.getSpec().getId());
         }
     }
+    public boolean shouldShowIndustryDropdown(Industry ind) {
 
+        if (MarketDialog.isAvailableToBuild(ind,ind.getMarket(),false)) {
+            return !market.hasIndustry(ind.getSpec().getId());
+        } else {
+            return false;
+        }
+    }
     @Override
     public void advance(float amount) {
         super.advance(amount);
