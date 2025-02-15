@@ -96,10 +96,10 @@ public class IndustryButton extends CustomButton {
         label = tooltip.addPara(getBuildingTimeToStr(spec), Color.ORANGE, 0f);
         label.autoSizeToWidth(125);
         label.getPosition().inTL(438 - indent - (label.computeTextWidth(label.getText()) / 2), heightLabel);
-        if (spec.getCost() > Global.getSector().getPlayerFleet().getCargo().getCredits().get()) {
-            label = tooltip.addPara(getCostStr(spec), Misc.getNegativeHighlightColor(), 0f);
+        if (spec.getNewPluginInstance(market).getBuildCost() > Global.getSector().getPlayerFleet().getCargo().getCredits().get()) {
+            label = tooltip.addPara(getCostStr(spec,market), Misc.getNegativeHighlightColor(), 0f);
         } else {
-            label = tooltip.addPara(getCostStr(spec), Color.ORANGE, 0f);
+            label = tooltip.addPara(getCostStr(spec,market), Color.ORANGE, 0f);
 
         }
 
@@ -133,11 +133,11 @@ public class IndustryButton extends CustomButton {
         return "" + (int) spec.getBuildTime();
     }
 
-    public String getCostStr(IndustrySpecAPI spec) {
+    public String getCostStr(IndustrySpecAPI spec,MarketAPI market) {
         if (spec.hasTag("parent_item")) {
             return "Variable";
         }
-        return Misc.getDGSCredits(spec.getCost());
+        return Misc.getDGSCredits(spec.getNewPluginInstance(market).getBuildCost());
     }
 
     public void setArrowPointDown(boolean arrowPointDown) {

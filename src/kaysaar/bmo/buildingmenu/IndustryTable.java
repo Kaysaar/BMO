@@ -88,7 +88,7 @@ public class IndustryTable extends UITableImpl {
                 BuildingMenuMisc.sortDropDownButtonsByName(dropDownButtons, ascending);
             }
             if(lastCheckedState.equals(buttonCosts)){
-                BuildingMenuMisc.sortDropDownButtonsByCost(dropDownButtons, ascending);
+                BuildingMenuMisc.sortDropDownButtonsByCost(dropDownButtons, ascending,market);
             }
             if(lastCheckedState.equals(buttonDays)){
                 BuildingMenuMisc.sortDropDownButtonsByDays(dropDownButtons, ascending);
@@ -194,7 +194,7 @@ public class IndustryTable extends UITableImpl {
             if(!shouldShowIndustryDropdown(button.mainSpec.getNewPluginInstance(market)))return true;
             if(BuildingMenuMisc.isIndustryFromTreePresent(button.mainSpec,market))return true;
             for (IndustrySpecAPI subSpec : button.getSpecs()) {
-                if (showIndustryDropdown(subSpec.getNewPluginInstance(market),subSpec)) {
+                if (showIndustry(subSpec.getNewPluginInstance(market),subSpec)) {
                     available.add(subSpec);
                 }
             }
@@ -261,7 +261,7 @@ public class IndustryTable extends UITableImpl {
             if (state == SortingState.ASCENDING) {
                 ascending = true;
             }
-            BuildingMenuMisc.sortDropDownButtonsByCost(dropDownButtons, ascending);
+            BuildingMenuMisc.sortDropDownButtonsByCost(dropDownButtons, ascending,market);
             buttonCosts.setCustomData(state);
 
             this.recreateTable();

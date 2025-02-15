@@ -97,16 +97,19 @@ public class UpgradePathUI extends PopUpUI {
     public void renderBelow(float alphaMult) {
         super.renderBelow(alphaMult);
         boolean didIt = false;
-        AshMisc.startStencil(mainPanel,1f);
-        for (IndustryImageWithTitle imageWithTitle : imageWithTitles) {
-            IndustrySpecAPI spec = Global.getSettings().getIndustrySpec(imageWithTitle.getIndustryId());
-            if (AshMisc.isStringValid(spec.getDowngrade())) {
-                IndustryImageWithTitle downgrade = getImageWithTitle(spec.getDowngrade());
-                drawTechLineVertical(imageWithTitle.getMainPanel().getPosition(),downgrade.getMainPanel().getPosition(), 0f);
+        if(mainPanel!=null){
+            AshMisc.startStencil(mainPanel,1f);
+            for (IndustryImageWithTitle imageWithTitle : imageWithTitles) {
+                IndustrySpecAPI spec = Global.getSettings().getIndustrySpec(imageWithTitle.getIndustryId());
+                if (AshMisc.isStringValid(spec.getDowngrade())) {
+                    IndustryImageWithTitle downgrade = getImageWithTitle(spec.getDowngrade());
+                    drawTechLineVertical(imageWithTitle.getMainPanel().getPosition(),downgrade.getMainPanel().getPosition(), 0f);
 
+                }
             }
+            AshMisc.endStencil();
         }
-        AshMisc.endStencil();
+
     }
 
     public IndustryImageWithTitle getImageWithTitle(String industryId) {

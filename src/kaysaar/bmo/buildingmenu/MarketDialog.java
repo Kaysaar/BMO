@@ -299,7 +299,7 @@ public class MarketDialog extends BasePopUpDialog {
     @Override
     public void processInput(List<InputEventAPI> events) {
         for (InputEventAPI event : events) {
-            if(frames>=15){
+            if(frames>=limit&&reachedMaxHeight){
                 if(event.isMouseDownEvent()&&!isDialog){
                     TrapezoidButtonDetector detector = new TrapezoidButtonDetector();
                     float xLeft = panelToInfluence.getPosition().getX();

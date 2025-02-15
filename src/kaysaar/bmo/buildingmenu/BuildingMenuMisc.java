@@ -609,12 +609,12 @@ public class BuildingMenuMisc {
     }
 
     // Sort by Cost
-    public static void sortDropDownButtonsByCost(ArrayList<DropDownButton> buttons, final boolean ascending) {
+    public static void sortDropDownButtonsByCost(ArrayList<DropDownButton> buttons, final boolean ascending, final MarketAPI market) {
         Collections.sort(buttons, new Comparator<DropDownButton>() {
             @Override
             public int compare(DropDownButton button1, DropDownButton button2) {
-                float cost1 = calculateCost(button1);
-                float cost2 = calculateCost(button2);
+                float cost1 = calculateCost(button1,market);
+                float cost2 = calculateCost(button2,market);
                 return ascending ? Float.compare(cost1, cost2) : Float.compare(cost2, cost1);
             }
         });
@@ -648,24 +648,24 @@ public class BuildingMenuMisc {
         return mainSpec != null ? mainSpec.getBuildTime() : 0;
     }
 
-    private static float calculateCost(DropDownButton button) {
+    private static float calculateCost(DropDownButton button,MarketAPI market) {
         if (button.droppableMode) {
             ArrayList<IndustrySpecAPI> subSpecs = ((IndustryDropDownButton) button).subSpecs;
             if (subSpecs != null && !subSpecs.isEmpty()) {
                 float totalCost = 0;
                 for (IndustrySpecAPI spec : subSpecs) {
-                    totalCost += getSpecCost(spec);
+                    totalCost += getSpecCost(spec,market);
                 }
                 return totalCost / subSpecs.size();
             }
         }
         IndustrySpecAPI mainSpec = ((IndustryDropDownButton) button).mainSpec;
-        return mainSpec != null ? getSpecCost(mainSpec) : 0;
+        return mainSpec != null ? getSpecCost(mainSpec,market) : 0;
     }
 
-    private static float getSpecCost(IndustrySpecAPI spec) {
+    private static float getSpecCost(IndustrySpecAPI spec,MarketAPI market) {
         // Replace this logic with the actual method to get the cost in your implementation.
-        return spec.getCost(); // Example placeholder method
+        return spec.getNewPluginInstance(market).getBuildCost(); // Example placeholder method
     }
 
     private static String getIndustryString(IndustrySpecAPI industry) {
