@@ -20,6 +20,7 @@ import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.Pair;
+import com.fs.starfarer.codex2.CodexDialog;
 import com.fs.starfarer.ui.P;
 import kaysaar.bmo.buildingmenu.additionalreq.AdditionalReqManager;
 import kaysaar.bmo.buildingmenu.industrytags.IndustryTagManager;
@@ -503,6 +504,7 @@ public class BuildingMenuMisc {
         testT.addUIElement(tTooltip).inTL(-5, 0);
         testT.getPosition().setSize(width, tTooltip1.getHeightSoFar());
         tooltip.addCustom(testT, -13);
+        tooltip.addSpacer(25);
         FactionAPI faction = ind.getMarket().getFaction();
         Color color = faction.getBaseUIColor();
         Color dark = faction.getDarkUIColor();
@@ -517,13 +519,13 @@ public class BuildingMenuMisc {
             }
             tooltip.addCustom(new IndustryItemsPanel(width, ind, isHover).getMainPanel(), 5f);
         }
-
     }
 
     public static ArrayList<IndustrySpecAPI> getAllSpecsWithoutDowngrade() {
         ArrayList<IndustrySpecAPI> specs = new ArrayList<>();
         for (IndustrySpecAPI allIndustrySpec : Global.getSettings().getAllIndustrySpecs()) {
-            if (allIndustrySpec.getDowngrade() == null && !allIndustrySpec.hasTag("sub_item")) {
+            if (allIndustrySpec.getDowngrade() == null && !allIndustrySpec.hasTag("sub_item")&&!allIndustrySpec.hasTag("do_not_show_in_build_dialog")) {
+
                 specs.add(allIndustrySpec);
             }
         }
