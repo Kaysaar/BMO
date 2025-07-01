@@ -4,19 +4,29 @@ import ashlib.data.plugins.misc.AshMisc;
 import ashlib.data.plugins.ui.models.PopUpUI;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.econ.Industry;
+import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.impl.campaign.econ.impl.BaseIndustry;
+import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.IntervalUtil;
+import com.fs.starfarer.api.util.Misc;
+import com.fs.starfarer.api.util.MutableValue;
 import kaysaar.bmo.buildingmenu.BuildingMenuMisc;
 import kaysaar.bmo.buildingmenu.IndustryImageWithTitle;
 import kaysaar.bmo.buildingmenu.MarketDialog;
 import kaysaar.bmo.buildingmenu.upgradepaths.CustomUpgradePath;
+import kaysaar.bmo.buildingmenu.upgradequeue.UpdateQueueMainManager;
+import kaysaar.bmo.buildingmenu.upgradequeue.UpdateQueueMarketManager;
 import org.lwjgl.util.vector.Vector2f;
 
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import static kaysaar.bmo.buildingmenu.BuildingMenuMisc.startQueue;
 import static org.lwjgl.opengl.GL11.*;
 
 public class UpgradePathUI extends PopUpUI {
@@ -30,7 +40,7 @@ public class UpgradePathUI extends PopUpUI {
     CustomPanelAPI mainPanel;
     MarketDialog marketDialog;
     TooltipMakerAPI tooltip;
-
+    MarketAPI market;
 
 
     ArrayList<IndustryImageWithTitle> imageWithTitles = new ArrayList<>();
@@ -41,7 +51,13 @@ public class UpgradePathUI extends PopUpUI {
         width = upgradePath.columns * imagewidth + ((upgradePath.columns - 1) * spaceBetweenColumns + spacers * 2);
         height = upgradePath.rows * imageheight + ((upgradePath.rows - 1) * spaceBetweenRows + spacers * 3);
     }
-
+    public UpgradePathUI(CustomUpgradePath upgradePath,MarketAPI market) {
+        this.market= market;
+        this.upgradePath = upgradePath;
+        this.marketDialog = null;
+        width = upgradePath.columns * imagewidth + ((upgradePath.columns - 1) * spaceBetweenColumns + spacers * 2);
+        height = upgradePath.rows * imageheight + ((upgradePath.rows - 1) * spaceBetweenRows + spacers * 3);
+    }
     @Override
     public void createUI(CustomPanelAPI panelAPI) {
         createUIMockup(panelAPI);
@@ -54,7 +70,7 @@ public class UpgradePathUI extends PopUpUI {
         TooltipMakerAPI tooltip = mainPanel.createUIElement(panelAPI.getPosition().getWidth() , panelAPI.getPosition().getHeight(), true);
         boolean did = false;
         for (final Map.Entry<String, Vector2f> entry : upgradePath.getIndustryCoordinates().entrySet()) {
-            IndustryImageWithTitle title = new IndustryImageWithTitle(entry.getKey(),did);
+            IndustryImageWithTitle title = new IndustryImageWithTitle(entry.getKey(),did,market);
             did =true;
             tooltip.addCustom(title.getMainPanel(), 0f).getPosition().inTL(calculateX(entry.getValue().x), calculateY(entry.getValue().y));
             tooltip.addTooltipToPrevious(new TooltipMakerAPI.TooltipCreator() {
@@ -91,6 +107,12 @@ public class UpgradePathUI extends PopUpUI {
 
     public float calculateY(float index) {
         return (imageheight + spaceBetweenRows) * index + spacers;
+    }
+
+    @Override
+    public void processInput(List<InputEventAPI> events) {
+        if(marketDialog==null)return;
+        super.processInput(events);
     }
 
     @Override
@@ -161,16 +183,24 @@ public class UpgradePathUI extends PopUpUI {
             if(imageWithTitle.getBuildButton()!=null){
                 if(imageWithTitle.getBuildButton().isChecked()){
                     imageWithTitle.getBuildButton().setChecked(false);
-                    marketDialog.table.specToBuilt = Global.getSettings().getIndustrySpec(imageWithTitle.getIndustryId());
-                    marketDialog.showcaseUI.setCurrentSpec(marketDialog.table.specToBuilt);
-                    marketDialog.setInUpgradeMode(true);
-                    marketDialog.showcaseUI.recreateIndustryPanel(true);
-                    forceDismiss();
+                    if(marketDialog!=null){
+                        marketDialog.table.specToBuilt = Global.getSettings().getIndustrySpec(imageWithTitle.getIndustryId());
+                        marketDialog.showcaseUI.setCurrentSpec(marketDialog.table.specToBuilt);
+                        marketDialog.setInUpgradeMode(true);
+                        marketDialog.showcaseUI.recreateIndustryPanel(true);
+                        forceDismiss();
+                    }
+                    else{
+                        startQueue(imageWithTitle.getIndustryId(),market);
+                    }
+
                     return;
                 }
             }
         }
     }
+
+
 
     @Override
     public void onExit() {

@@ -346,7 +346,11 @@ public class MarketDialog extends BasePopUpDialog {
     @Override
     public void advance(float amount) {
         super.advance(amount);
-        if(util!=null){
+        if(Global.getSettings().isShowingCodex()){
+            util = new IntervalUtil(0.2f, 0.2f);
+            dissableExit = true;
+        }
+        if(util!=null&&!Global.getSettings().isShowingCodex()){
             util.advance(amount);
             if(util.intervalElapsed()){
                 dissableExit =  false;

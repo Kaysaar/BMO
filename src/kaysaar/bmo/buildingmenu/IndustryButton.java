@@ -108,7 +108,7 @@ public class IndustryButton extends CustomButton {
     }
 
     private Pair<String, Color> getIndustryString(BaseIndustry industry) {
-        Pair<String, Color> type = new Pair<>("",Misc.getTextColor());
+        Pair<String, Color> type = new Pair<>(BuildingMenuMisc.getIndustryString(industry.getSpec()),Misc.getTextColor());
         if (industry.getSpec().hasTag("parent_item")) {
             type.one = "Variable";
             type.two = Color.ORANGE;

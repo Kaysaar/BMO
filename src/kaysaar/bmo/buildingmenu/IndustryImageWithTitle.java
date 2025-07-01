@@ -4,6 +4,7 @@ import ashlib.data.plugins.ui.models.ImagePanel;
 import ashlib.data.plugins.ui.plugins.UILinesRenderer;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CustomUIPanelPlugin;
+import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.ui.ButtonAPI;
 import com.fs.starfarer.api.ui.CustomPanelAPI;
@@ -12,13 +13,15 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI;
 
 import java.util.List;
 
+import static kaysaar.bmo.buildingmenu.MarketDialog.isAvailableToBuild;
+
 public class IndustryImageWithTitle implements CustomUIPanelPlugin {
 
     CustomPanelAPI mainPanel;
     String industryId;
     ButtonAPI buildButton;
 
-    public IndustryImageWithTitle(String industryId,boolean doesHaveBuildButton) {
+    public IndustryImageWithTitle(String industryId, boolean doesHaveBuildButton, MarketAPI market) {
         this.industryId = industryId;
         UILinesRenderer renderer = new UILinesRenderer(0f);
         mainPanel = Global.getSettings().createCustom(190,110,renderer);
@@ -32,7 +35,10 @@ public class IndustryImageWithTitle implements CustomUIPanelPlugin {
         tooltip.addCustom(panelImage,2f);
         if(doesHaveBuildButton){
            buildButton = tooltip.addButton("Queue",null,70,20,5f);
-
+           if(market!=null){
+               buildButton.setEnabled(isAvailableToBuild(Global.getSettings().getIndustrySpec(industryId).getNewPluginInstance(market),market,true));
+               buildButton.setText("Build");
+           }
         }
         mainPanel.addUIElement(tooltip).inTL(0,0);
 

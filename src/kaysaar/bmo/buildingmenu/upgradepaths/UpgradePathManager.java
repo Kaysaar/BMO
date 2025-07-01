@@ -37,7 +37,7 @@ public class UpgradePathManager {
         return genericUpgradePaths.get(industryId);
     }
     public void rePopulate(){
-        for (IndustrySpecAPI industrySpecAPI : BuildingMenuMisc.getAllSpecsWithoutDowngradeAndItsSubItems()) {
+        for (IndustrySpecAPI industrySpecAPI : BuildingMenuMisc.getAllSpecsWithoutSubItem()) {
             if(AshMisc.isStringValid(industrySpecAPI.getUpgrade())){
                 LinkedHashSet<String>ids = new LinkedHashSet<>();
                 IndustrySpecAPI curr = industrySpecAPI;

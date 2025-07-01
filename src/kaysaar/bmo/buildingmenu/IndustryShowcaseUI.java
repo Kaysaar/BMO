@@ -76,7 +76,7 @@ public class IndustryShowcaseUI implements CustomUIPanelPlugin {
         }
         holderPanel.addUIElement(mainTooltip).inTL(0,130);
         holderPanel.addUIElement(subTooltip).inTL(0,0);
-        holderPanel.addUIElement(buttonTooltip).inTL(0,holderPanel.getPosition().getHeight()-leftSpace+135);
+        holderPanel.addUIElement(buttonTooltip).inTL(0,holderPanel.getPosition().getHeight()-leftSpace+150);
         mainPanel.addComponent(holderPanel).inTL(0,0);
 
     }

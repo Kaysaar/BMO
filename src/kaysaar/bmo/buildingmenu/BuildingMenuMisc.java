@@ -16,15 +16,19 @@ import com.fs.starfarer.api.impl.campaign.ids.Industries;
 import com.fs.starfarer.api.impl.campaign.ids.Items;
 import com.fs.starfarer.api.impl.campaign.ids.Strings;
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin;
+import com.fs.starfarer.api.impl.codex.CodexDataV2;
 import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.Misc;
+import com.fs.starfarer.api.util.MutableValue;
 import com.fs.starfarer.api.util.Pair;
 import com.fs.starfarer.codex2.CodexDialog;
 import com.fs.starfarer.ui.P;
 import kaysaar.bmo.buildingmenu.additionalreq.AdditionalReqManager;
 import kaysaar.bmo.buildingmenu.industrytags.IndustryTagManager;
 import kaysaar.bmo.buildingmenu.upgradepaths.IndustryItemsPanel;
+import kaysaar.bmo.buildingmenu.upgradequeue.UpdateQueueMainManager;
+import kaysaar.bmo.buildingmenu.upgradequeue.UpdateQueueMarketManager;
 
 import java.awt.*;
 import java.lang.invoke.MethodHandle;
@@ -34,6 +38,12 @@ import java.util.List;
 import java.util.*;
 
 public class BuildingMenuMisc {
+    public static HashMap<String,String>types = new HashMap<>();
+    static {
+        types.put("unique","Unique");
+        types.put("structure","Structure");
+        types.put("industry","Industry");
+    }
     private static class ReflectionUtilis {
         // Code taken and modified from Grand Colonies
         private static final Class<?> fieldClass;
@@ -333,7 +343,22 @@ public class BuildingMenuMisc {
         }
         return map;
     }
-
+    public static void startQueue(String industryId,MarketAPI market) {
+        UpdateQueueMarketManager manager = (UpdateQueueMarketManager) market.getMemory().get(UpdateQueueMainManager.memKey);
+        Set<String> str = BuildingMenuMisc.getUpgradePath(industryId);
+        manager.addNewQueue(str);
+        Industry ind =Global.getSettings().getIndustrySpec(manager.getQueue(industryId).getCurrIdOfUpgrade()).getNewPluginInstance(market);
+        int cost = BuildingMenuMisc.getCostAndTimeFromPath(BuildingMenuMisc.getUpgradePath(industryId),market).one.intValue();
+        Misc.getCurrentlyBeingConstructed(market);
+        market.getConstructionQueue().addToEnd(ind.getId(), (int) ind.getBuildCost());
+        MutableValue credits = Global.getSector().getPlayerFleet().getCargo().getCredits();
+        credits.subtract(cost);
+        if (credits.get() <= 0.0F) {
+            credits.set(0.0F);
+        }
+        Global.getSector().getCampaignUI().getMessageDisplay().addMessage(String.format("Spent %s", Misc.getDGSCredits((cost)),Global.getSettings().getColor("standardUIIconColor"), Misc.getDGSCredits(cost), Color.ORANGE));
+        Global.getSoundPlayer().playUISound("ui_build_industry", 1, 1);
+    }
     public static Set<IndustrySpecAPI> getIndustryTree(String progenitor) {
         Set<IndustrySpecAPI> specs = new LinkedHashSet<>();
         if(!AshMisc.isStringValid(progenitor))return specs;
@@ -500,10 +525,12 @@ public class BuildingMenuMisc {
         if (hasTitle) {
             title.setText(((LabelAPI) BuildingMenuMisc.getChildren(componentAPI).get(0)).getText());
         }
+        ReflectionUtilis.invokeMethodWithAutoProjection("makeNonExpandable",tTooltip);
         ((LabelAPI) BuildingMenuMisc.getChildren(componentAPI).get(0)).setText("");
         testT.addUIElement(tTooltip).inTL(-5, 0);
         testT.getPosition().setSize(width, tTooltip1.getHeightSoFar());
         tooltip.addCustom(testT, -13);
+
         tooltip.addSpacer(25);
         FactionAPI faction = ind.getMarket().getFaction();
         Color color = faction.getBaseUIColor();
@@ -519,6 +546,11 @@ public class BuildingMenuMisc {
             }
             tooltip.addCustom(new IndustryItemsPanel(width, ind, isHover).getMainPanel(), 5f);
         }
+        TooltipMakerAPI  test = tooltip.beginSubTooltip(testT.getPosition().getWidth());
+        test.setCodexEntryId(CodexDataV2.getIndustryEntryId(ind.getSpec().getId()));
+        tooltip.endSubTooltip();
+        tooltip.addCustom(test,2f);
+        tooltip.addSpacer(25f);
     }
 
     public static ArrayList<IndustrySpecAPI> getAllSpecsWithoutDowngrade() {
@@ -541,7 +573,15 @@ public class BuildingMenuMisc {
         }
         return specs;
     }
-
+    public static ArrayList<IndustrySpecAPI> getAllSpecsWithoutSubItem() {
+        ArrayList<IndustrySpecAPI> specs = new ArrayList<>();
+        for (IndustrySpecAPI allIndustrySpec : Global.getSettings().getAllIndustrySpecs()) {
+            if (allIndustrySpec.hasTag("sub_item")&&!allIndustrySpec.hasTag("do_not_show_in_build_dialog")) {
+                specs.add(allIndustrySpec);
+            }
+        }
+        return specs;
+    }
     public static boolean isIndustryFromTreePresent(IndustrySpecAPI spec, MarketAPI marketToValidate) {
         if (spec.hasTag("parent_item")) {
             for (IndustrySpecAPI industrySpecAPI : getSpecsOfParent(spec.getData())) {
@@ -625,7 +665,7 @@ public class BuildingMenuMisc {
     // Utility Methods for Sorting Logic
     private static String getButtonName(DropDownButton button) {
         return button instanceof IndustryDropDownButton
-                ? ((IndustryDropDownButton) button).mainSpec.getName()
+                ? getIndustryString(((IndustryDropDownButton) button).mainSpec)
                 : "Unknown";
     }
 
@@ -670,13 +710,11 @@ public class BuildingMenuMisc {
         return spec.getNewPluginInstance(market).getBuildCost(); // Example placeholder method
     }
 
-    private static String getIndustryString(IndustrySpecAPI industry) {
-        if (industry.hasTag("parent_item")) {
-            return "Variable";
-        } else if (industry.hasTag("industry")) {
-            return "Industry";
-        } else if (industry.hasTag("structure")) {
-            return "Structure";
+    public static String getIndustryString(IndustrySpecAPI industry) {
+        for (Map.Entry<String, String> entry : types.entrySet()) {
+            if(industry.hasTag(entry.getKey())) {
+                return entry.getValue();
+            }
         }
         return "Unknown";
     }
