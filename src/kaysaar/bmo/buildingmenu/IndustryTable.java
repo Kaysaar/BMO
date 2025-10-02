@@ -6,16 +6,14 @@ import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.ui.ButtonAPI;
 import com.fs.starfarer.api.ui.CustomPanelAPI;
 import com.fs.starfarer.api.util.Misc;
+import kaysaar.bmo.BmoListener;
 import kaysaar.bmo.buildingmenu.industrytags.IndustryTagManager;
 import kaysaar.bmo.buildingmenu.industrytags.IndustryTagSpec;
 import kaysaar.bmo.buildingmenu.industrytags.IndustryTagType;
 import kaysaar.bmo.buildingmenu.states.SortingState;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 
 public class IndustryTable extends UITableImpl {
@@ -34,8 +32,9 @@ public class IndustryTable extends UITableImpl {
         this.dialog = dialog;
         this.market = dialog.market;
         if (dropDownButtons.isEmpty()) {
+            HashSet<String>notShown = BmoListener.aboutToCreateBuildingMenu(market);
 
-            ArrayList<IndustrySpecAPI> specs = BuildingMenuMisc.getAllSpecsWithoutDowngrade();
+            ArrayList<IndustrySpecAPI> specs = new ArrayList<>(BuildingMenuMisc.getAllSpecsWithoutDowngrade().stream().filter(x->!notShown.contains(x.getId())).toList());
             BuildingMenuMisc.sortIndustrySpecsByName(specs);
 
             for (IndustrySpecAPI industrySpecAPI : specs) {

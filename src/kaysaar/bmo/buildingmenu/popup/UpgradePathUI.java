@@ -70,7 +70,7 @@ public class UpgradePathUI extends PopUpUI {
         TooltipMakerAPI tooltip = mainPanel.createUIElement(panelAPI.getPosition().getWidth() , panelAPI.getPosition().getHeight(), true);
         boolean did = false;
         for (final Map.Entry<String, Vector2f> entry : upgradePath.getIndustryCoordinates().entrySet()) {
-            IndustryImageWithTitle title = new IndustryImageWithTitle(entry.getKey(),did,market);
+            IndustryImageWithTitle title = new IndustryImageWithTitle(entry.getKey(),did,marketDialog.market);
             did =true;
             tooltip.addCustom(title.getMainPanel(), 0f).getPosition().inTL(calculateX(entry.getValue().x), calculateY(entry.getValue().y));
             tooltip.addTooltipToPrevious(new TooltipMakerAPI.TooltipCreator() {

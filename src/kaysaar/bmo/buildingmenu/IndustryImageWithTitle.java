@@ -4,8 +4,10 @@ import ashlib.data.plugins.ui.models.ImagePanel;
 import ashlib.data.plugins.ui.plugins.UILinesRenderer;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CustomUIPanelPlugin;
+import com.fs.starfarer.api.campaign.econ.Industry;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
+import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.ui.ButtonAPI;
 import com.fs.starfarer.api.ui.CustomPanelAPI;
 import com.fs.starfarer.api.ui.PositionAPI;
@@ -25,20 +27,18 @@ public class IndustryImageWithTitle implements CustomUIPanelPlugin {
         this.industryId = industryId;
         UILinesRenderer renderer = new UILinesRenderer(0f);
         mainPanel = Global.getSettings().createCustom(190,110,renderer);
+        IndustrySpecAPI spec = (Global.getSettings().getIndustrySpec(industryId));
         TooltipMakerAPI tooltip = mainPanel.createUIElement(200  ,110,false);
-        tooltip.addTitle(Global.getSettings().getIndustrySpec(industryId).getName());
+        Industry industry = spec.getNewPluginInstance(market);
+        tooltip.addTitle(industry.getCurrentName());
         tooltip.getPrev().getPosition().inTL(0,0);
         ImagePanel panel = new ImagePanel();
         CustomPanelAPI panelImage  = mainPanel.createCustomPanel(190,95,panel);
         renderer.setPanel(panelImage);
-        panel.init(panelImage,Global.getSettings().getSprite(Global.getSettings().getIndustrySpec(industryId).getImageName()));
+        panel.init(panelImage,Global.getSettings().getSprite(industry.getCurrentImage()));
         tooltip.addCustom(panelImage,2f);
         if(doesHaveBuildButton){
            buildButton = tooltip.addButton("Queue",null,70,20,5f);
-           if(market!=null){
-               buildButton.setEnabled(isAvailableToBuild(Global.getSettings().getIndustrySpec(industryId).getNewPluginInstance(market),market,true));
-               buildButton.setText("Build");
-           }
         }
         mainPanel.addUIElement(tooltip).inTL(0,0);
 

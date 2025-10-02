@@ -44,6 +44,7 @@ public class BuildingMenuMisc {
         types.put("structure","Structure");
         types.put("industry","Industry");
     }
+    public static LinkedHashMap<String,Set<IndustrySpecAPI>>industryUpgrades = new LinkedHashMap<>();
     private static class ReflectionUtilis {
         // Code taken and modified from Grand Colonies
         private static final Class<?> fieldClass;
@@ -360,27 +361,29 @@ public class BuildingMenuMisc {
         Global.getSoundPlayer().playUISound("ui_build_industry", 1, 1);
     }
     public static Set<IndustrySpecAPI> getIndustryTree(String progenitor) {
-        Set<IndustrySpecAPI> specs = new LinkedHashSet<>();
-        if(!AshMisc.isStringValid(progenitor))return specs;
-        for (IndustrySpecAPI allIndustrySpec : Global.getSettings().getAllIndustrySpecs()) {
-            if (allIndustrySpec.getDowngrade() == null) continue;
-            IndustrySpecAPI currentOne = allIndustrySpec;
-            Set<IndustrySpecAPI> specsToProgenitor = new LinkedHashSet<>();
-            while (currentOne.getDowngrade() != null) {
-                specsToProgenitor.add(currentOne);
-                if(!AshMisc.isStringValid(currentOne.getDowngrade()))break;
-                if (currentOne.getDowngrade().equals(currentOne.getId())) break; // KOL, WHY
-                currentOne = Global.getSettings().getIndustrySpec(currentOne.getDowngrade());
-                if(currentOne==null)break;
-            }
-            if(currentOne!=null){
-                if (currentOne.getId().equals(progenitor)) {
-                    specs.addAll(specsToProgenitor);
-                }
-            }
+        if(industryUpgrades.get(progenitor)==null){
+            Set<IndustrySpecAPI> specs = new LinkedHashSet<>();
+            if(!AshMisc.isStringValid(progenitor))return specs;
+            for (IndustrySpecAPI allIndustrySpec : Global.getSettings().getAllIndustrySpecs()) {
+                if (allIndustrySpec.getDowngrade() == null) continue;
+                IndustrySpecAPI currentOne = allIndustrySpec;
+                Set<IndustrySpecAPI> specsToProgenitor = new LinkedHashSet<>();
+                while (currentOne.getDowngrade() != null) {
+                    specsToProgenitor.add(currentOne);
+                    if(!AshMisc.isStringValid(currentOne.getDowngrade()))break;
+                    if (currentOne.getDowngrade().equals(currentOne.getId())) break; // KOL, WHY
+                    currentOne = Global.getSettings().getIndustrySpec(currentOne.getDowngrade());
+                    if (currentOne!=null&&currentOne.getId().equals(progenitor)) {
+                        specs.addAll(specsToProgenitor);
+                        break;
+                    }
 
+                }
+
+            }
+            industryUpgrades.put(progenitor,specs);
         }
-        return specs;
+      return industryUpgrades.get(progenitor);
     }
 
     public static LinkedHashSet<String> getUpgradePath(String upgradeID) {
@@ -585,11 +588,9 @@ public class BuildingMenuMisc {
     public static boolean isIndustryFromTreePresent(IndustrySpecAPI spec, MarketAPI marketToValidate) {
         if (spec.hasTag("parent_item")) {
             for (IndustrySpecAPI industrySpecAPI : getSpecsOfParent(spec.getData())) {
-                IndustrySpecAPI current = industrySpecAPI;
-                if (marketToValidate.hasIndustry(current.getId())||marketToValidate.getConstructionQueue().hasItem(current.getId())) return true;
-                while (current.getUpgrade() != null) {
-                    current = Global.getSettings().getIndustrySpec(current.getUpgrade());
-                    if (marketToValidate.hasIndustry(current.getId())||marketToValidate.getConstructionQueue().hasItem(current.getId())) {
+                if (marketToValidate.hasIndustry(industrySpecAPI.getId())||marketToValidate.getConstructionQueue().hasItem(industrySpecAPI.getId())) return true;
+                for (IndustrySpecAPI subCurr : getIndustryTree(industrySpecAPI.getId())) {
+                    if (marketToValidate.hasIndustry(subCurr.getId())||marketToValidate.getConstructionQueue().hasItem(subCurr.getId())) {
                         return true;
                     }
                 }
