@@ -34,6 +34,12 @@ public class UpgradePathManager {
         if(customUpgradePaths.containsKey(industryId)){
             return customUpgradePaths.get(industryId);
         }
+        // we have not found main one time to look for others
+        for (CustomUpgradePath value : customUpgradePaths.values()) {
+            if(value.getIndustryCoordinates().containsKey(industryId)){
+                return value;
+            }
+        }
         return genericUpgradePaths.get(industryId);
     }
     public void rePopulate(){

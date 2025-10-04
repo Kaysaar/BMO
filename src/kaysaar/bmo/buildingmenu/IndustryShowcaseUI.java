@@ -70,7 +70,7 @@ public class IndustryShowcaseUI implements CustomUIPanelPlugin {
         }
 
         BuildingMenuMisc.createTooltipForIndustry((BaseIndustry) currentSpec.getNewPluginInstance(market),mode ,mainTooltip,expanded,false,mainPanel.getPosition().getWidth(),true,false,isForUpgrade);
-        if(!BuildingMenuMisc.getIndustryTree(currentSpec.getId()).isEmpty()){
+        if( UpgradePathManager.getInstance().getCustomUpgradePath(currentSpec.getId())!=null){
             buttonForUpgrade = buttonTooltip.addButton("Show industry upgrade path",null,market.getFaction().getBaseUIColor(),market.getFaction().getDarkUIColor(),Alignment.MID,CutStyle.ALL,mainPanel.getPosition().getWidth(),20,0f);
             buttonForUpgrade.getPosition().inTL(0,0);
         }
