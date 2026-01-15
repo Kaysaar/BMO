@@ -8,6 +8,7 @@ import com.fs.starfarer.api.campaign.impl.items.BaseSpecialItemPlugin;
 import com.fs.starfarer.api.impl.campaign.econ.impl.BaseIndustry;
 import com.fs.starfarer.api.impl.campaign.econ.impl.InstallableItemEffect;
 import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo;
+import com.fs.starfarer.api.impl.campaign.shared.WormholeManager;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.ui.*;
@@ -46,7 +47,15 @@ public class IndustryItemPanel implements CustomUIPanelPlugin {
         checkbox.setClickable(false);
         checkbox.setMouseOverSound(null);
         CargoAPI cargo = Global.getFactory().createCargo(false);
-        CargoStackAPI stackAPI = Global.getFactory().createCargoStack(CargoAPI.CargoItemType.SPECIAL,new SpecialItemData(itemId,null),cargo);
+        // Edge-case fix regarding Wormhole Anchor item requiring data when showing tooltip
+        CargoStackAPI stackAPI;
+        if (itemId.equals("wormhole_anchor")) {
+            WormholeManager.WormholeItemData itemData = new WormholeManager.WormholeItemData("standard", "unknown", "Unknown");
+            stackAPI = Global.getFactory().createCargoStack(CargoAPI.CargoItemType.SPECIAL,new SpecialItemData(itemId,itemData.toJsonStr()),cargo);
+        }
+        else {
+            stackAPI = Global.getFactory().createCargoStack(CargoAPI.CargoItemType.SPECIAL,new SpecialItemData(itemId,null),cargo);
+        }
        final SpecialItemPlugin plugin = Global.getSettings().getSpecialItemSpec(itemId).getNewPluginInstance(stackAPI);
         tooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
             @Override
