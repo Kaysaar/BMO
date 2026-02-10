@@ -1,5 +1,6 @@
 package kaysaar.bmo.buildingmenu;
 
+import ashlib.data.plugins.misc.AshMisc;
 import ashlib.data.plugins.ui.models.BasePopUpDialog;
 
 import com.fs.starfarer.api.EveryFrameScript;
@@ -223,10 +224,10 @@ public class BuildingUITracker implements EveryFrameScript {
                     IndustryTagManager.loadDefaultTags();
                     IndustryTagManager.loadModdedTags();
                     BasePopUpDialog dialog2 = new MarketDialog(null, (MarketAPI) ReflectionUtilis.getPrivateVariable("market", ReflectionUtilis.invokeMethod("getDelegate", dialog)), ReflectionUtilis.invokeMethod("getOverview", ReflectionUtilis.invokeMethod("getDelegate", dialog)));
-                    CustomPanelAPI panelAPI = Global.getSettings().createCustom(1100, 700, dialog2);
-                    UIPanelAPI panelAPI1 = ProductionUtil.getCoreUI();
-                    dialog2.init(panelAPI, panelAPI1.getPosition().getCenterX() - (panelAPI.getPosition().getWidth() / 2), panelAPI1.getPosition().getCenterY() + (panelAPI.getPosition().getHeight() / 2), true);
-
+                    AshMisc.initPopUpDialog(dialog2,1100,700);
+//                    CustomPanelAPI panelAPI = Global.getSettings().createCustom(1100, 700, dialog2);
+//                    UIPanelAPI panelAPI1 = ProductionUtil.getCoreUI();
+//                    dialog2.init(panelAPI, panelAPI1.getPosition().getCenterX() - (panelAPI.getPosition().getWidth() / 2), panelAPI1.getPosition().getCenterY() + (panelAPI.getPosition().getHeight() / 2), true);
                 }
 
             }

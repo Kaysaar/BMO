@@ -33,6 +33,7 @@ public class TagFilterPopUp extends PopUpUI {
     public void createUI(CustomPanelAPI panelAPI) {
         createUIMockup(panelAPI);
         panelAPI.addComponent(mainPanel).inTL(0, 0);
+        addPanel(mainPanel);
     }
 
     @Override

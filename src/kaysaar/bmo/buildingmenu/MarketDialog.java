@@ -218,6 +218,7 @@ public class MarketDialog extends BasePopUpDialog {
         TooltipMakerAPI tooltip = panelAPI.createUIElement(panelAPI.getPosition().getWidth()-30,panelAPI.getPosition().getHeight()-y,false);
         createContentForDialog(tooltip,panelAPI.getPosition().getWidth()-30,panelAPI.getPosition().getHeight()-y-70);
         panelAPI.addUIElement(tooltip).inTL(x,y);
+        addTooltip(tooltip);
         createConfirmAndCancelSection(panelAPI);;
     }
 

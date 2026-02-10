@@ -1,5 +1,6 @@
 package kaysaar.bmo.buildingmenu;
 
+import ashlib.data.plugins.misc.AshMisc;
 import ashlib.data.plugins.ui.models.PopUpUI;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CustomUIPanelPlugin;
@@ -54,7 +55,8 @@ public class IndustryTagFilter implements CustomUIPanelPlugin {
             buttonToShowcaseFilters.setChecked(false);
             PopUpUI ui = new TagFilterPopUp(marketDialog);
             marketDialog.dissableExit = true;
-            placePopUpUI(ui, buttonToShowcaseFilters,390,300);
+//            placePopUpUI(ui, buttonToShowcaseFilters,390,300);
+            AshMisc.placePopUpUIInverse(ui, buttonToShowcaseFilters,390,300);
         }
     }
         if(buttonReset !=null){
@@ -66,20 +68,21 @@ public class IndustryTagFilter implements CustomUIPanelPlugin {
             }
         }
     }
+    // DEPRECATED, was used on line 58
     public static void placePopUpUI(PopUpUI ui, ButtonAPI button, float initWidth, float initHeight) {
         float width1 = initWidth;
         float height1 = initHeight;
         CustomPanelAPI panelAPI = Global.getSettings().createCustom(width1, height1, ui);
         float x = button.getPosition().getX() + button.getPosition().getWidth();
-        float y = button.getPosition().getY() + button.getPosition().getHeight();
+        float y = Global.getSettings().getScreenHeight()-(button.getPosition().getY() + button.getPosition().getHeight());
         if (x + width1 >= Global.getSettings().getScreenWidth()) {
             float diff = x + width1 - Global.getSettings().getScreenWidth();
             x = x - diff - 5.0F;
         }
 
-        if (y - height1 <= 0.0F) {
-            y = height1;
-        }
+//        if (y - height1 <= 0.0F) {
+//            y = height1;
+//        }
 
         if (y > Global.getSettings().getScreenHeight()) {
             y = Global.getSettings().getScreenHeight() - 10.0F;
