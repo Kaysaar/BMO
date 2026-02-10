@@ -56,7 +56,7 @@ public class IndustryTagFilter implements CustomUIPanelPlugin {
             PopUpUI ui = new TagFilterPopUp(marketDialog);
             marketDialog.dissableExit = true;
 //            placePopUpUI(ui, buttonToShowcaseFilters,390,300);
-            AshMisc.placePopUpUIInverse(ui, buttonToShowcaseFilters,390,300);
+            AshMisc.placePopUpUI(ui, buttonToShowcaseFilters,390,300);
         }
     }
         if(buttonReset !=null){
