@@ -16,6 +16,7 @@ import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.Pair;
 import kaysaar.bmo.buildingmenu.BuildingMenuMisc;
 import kaysaar.bmo.buildingmenu.additionalreq.AdditionalReqManager;
+import org.apache.log4j.Logger;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 public class BMOUpgradeButtonsListener implements IndustryOptionProvider {
+    private static final Logger log = Logger.getLogger(BMOUpgradeButtonsListener.class);
     public HashMap<String, ArrayList<String>>upgradeForIndustryRepo = new HashMap<>();
     public Object AOTD_VOK_UPGRADE = new Object();
     public Object AOTD_VOK_CANCEL_UPGRADE = new Object();
@@ -179,14 +181,22 @@ public class BMOUpgradeButtonsListener implements IndustryOptionProvider {
                 MarketAPI marketAPI = ind.getMarket();
                 MarketAPI copy = marketAPI.clone();
                 marketAPI = copy;
-                marketAPI.addIndustry(s);
-                Industry upgrdInd = marketAPI.getIndustry(s);
-                if(upgrdInd.isAvailableToBuild()||(upgrdInd.showWhenUnavailable()&&!upgrdInd.isAvailableToBuild())){
-                    canShow = AdditionalReqManager.getInstance().doesMetReq(upgrdInd.getId(), marketAPI);
-
+//                marketAPI.addIndustry(s);
+//                Industry upgrdInd = marketAPI.getIndustry(s);
+                Industry upgrdInd = Global.getSettings().getIndustrySpec(s).getNewPluginInstance(marketAPI);
+                // Added null-check
+                if (upgrdInd != null) {
+                    if(upgrdInd.isAvailableToBuild()||(upgrdInd.showWhenUnavailable()&&!upgrdInd.isAvailableToBuild())){
+                        canShow = AdditionalReqManager.getInstance().doesMetReq(upgrdInd.getId(), marketAPI);
+                    }
+//                    marketAPI.removeIndustry(upgrdInd.getId(), null, false);
+//                    marketAPI.reapplyIndustries();
                 }
-                marketAPI.removeIndustry(upgrdInd.getId(), null, false);
-                marketAPI.reapplyIndustries();
+                else {
+                    log.error("Current market does not contain " + s + " industry");
+                    log.error("Return value of \"com.fs.starfarer.api.campaign.econ.MarketAPI.getIndustry(String)\" is null");
+                }
+
             }
             if(canShow){
                 IndustryOptionData opt = new IndustryOptionData("Choose Upgrade", AOTD_VOK_UPGRADE, ind, this);
