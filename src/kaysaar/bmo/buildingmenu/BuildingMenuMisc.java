@@ -480,7 +480,9 @@ public class BuildingMenuMisc {
         }
         if (!mod.equalsIgnoreCase("vanilla") && !ind.getSpec().hasTag("parent_item")) {
             tooltip.addSectionHeading("Mod", ind.getMarket().getFaction().getBaseUIColor(), ind.getMarket().getFaction().getDarkUIColor(), Alignment.MID, 5f);
-            tooltip.addPara("This industry is from %s", 5f, Color.ORANGE, mod);
+            String typeString = "structure";
+            if (ind.isIndustry()) typeString = "industry";
+            tooltip.addPara("This " + typeString + " is from %s", 5f, Color.ORANGE, mod);
         }
         if (isInQueue) {
             tooltip.addSectionHeading("Queue upgrade", ind.getMarket().getFaction().getBaseUIColor(), ind.getMarket().getFaction().getDarkUIColor(), Alignment.MID, 5f);

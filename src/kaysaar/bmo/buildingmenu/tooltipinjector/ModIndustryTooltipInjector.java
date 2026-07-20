@@ -21,7 +21,9 @@ public class ModIndustryTooltipInjector extends BaseIndustryOptionProvider {
         for (IndustryTagSpec spec : IndustryTagManager.getTagsSpecBasedOnType(IndustryTagType.MOD)) {
             if (spec.specs.contains(ind.getSpec().getId()) && !IndustryTagManager.vanillaIndustries.contains(ind.getSpec().getId())) {
                 tooltip.addSectionHeading("Mod", Alignment.MID, 5f);
-                tooltip.addPara("This industry is from %s", 5f, Color.ORANGE, spec.tagName);
+                String typeString = "structure";
+                if (ind.isIndustry()) typeString = "industry";
+                tooltip.addPara("This " + typeString + " is from %s", 5f, Color.ORANGE, spec.tagName);
                 tooltip.addSectionHeading("", Alignment.MID, 5f);
             }
         }
